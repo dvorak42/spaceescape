@@ -60,9 +60,16 @@ public class Entity {
 		return new Vector2(sprite.getWidth(), sprite.getHeight());
 	}
 	
+	public void setRotation(float r) {
+		sprite.setRotation(r);
+	}
+
+	public float getRotation() {
+		return sprite.getRotation();
+	}
+	
 	public void rotate(float dr) {
-		float cRotation = sprite.getRotation();
-		sprite.setRotation(cRotation + dr);		
+		setRotation(getRotation() + dr);		
 	}
 	        
 	public void kill()
