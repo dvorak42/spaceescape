@@ -26,7 +26,7 @@ public class SpaceGestureListener implements GestureListener {
 		else
 			screen.spaceship.rotate(-10);
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean fling(float velocityX, float velocityY, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		screen.spaceship.toss(new Vector2(velocityX, -velocityY), 100);
+		return true;
 	}
 
 	@Override

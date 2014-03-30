@@ -42,7 +42,7 @@ public class SpaceScreen implements Screen {
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.zoom = 0.1f;
+		camera.zoom = 0.1f*10;
 		
 		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceship.png"));
 		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);

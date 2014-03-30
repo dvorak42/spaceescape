@@ -1,6 +1,7 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class Spaceship extends Entity {
 	Body body;
+	World world;
 	
 	public Spaceship(SpaceEscapeGame g, Sprite s) {
 		super(g, s);
@@ -18,6 +20,7 @@ public class Spaceship extends Entity {
 	
 	public void initBody(World w, Vector2 pos) {
 		setPosition(pos);
+		world = w;
 		BodyDef bd = new BodyDef();
 		bd.position.set(pos);
 		bd.type = BodyType.DynamicBody;
@@ -41,5 +44,29 @@ public class Spaceship extends Entity {
 	@Override
 	public void rotate(float dr) {
 		body.applyAngularImpulse(1000 * dr, true);
+	}
+	
+	public void toss(Vector2 dir, float mass) {
+		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.5f);
+		Vector2 pos = body.getPosition().cpy().add(offset);
+		
+		BodyDef bd = new BodyDef();
+		bd.position.set(pos);
+		bd.type = BodyType.DynamicBody;
+
+		Body body = world.createBody(bd);
+		CircleShape circle = new CircleShape();
+		circle.setRadius(5);
+		
+		FixtureDef fd = new FixtureDef();
+		fd.shape = circle;
+		fd.density = mass / (2 * MathUtils.PI * 100); 
+		fd.friction = 0.04f;
+		fd.isSensor = true;
+		
+		body.createFixture(fd);
+		
+		circle.dispose();
+		
 	}
 }
