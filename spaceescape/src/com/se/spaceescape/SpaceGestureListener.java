@@ -37,9 +37,13 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean fling(float velocityX, float velocityY, int button) {
-		ResourceItem ri = Utils.createResource(screen.game, Constants.RESOURCE_FOOD);
-		screen.resources.add(ri);
-		screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+		ResourceItem ri = null;
+		if(screen.resources.size > 0)
+			ri = screen.resources.pop();
+		if(ri != null) {
+			screen.entities.add(ri);
+			screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+		}
 		return true;
 	}
 

@@ -2,11 +2,14 @@ package com.se.spaceescape.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
 import com.se.spaceescape.ResourceItem;
 import com.se.spaceescape.SpaceEscapeGame;
@@ -34,6 +38,7 @@ public class SpaceScreen implements Screen {
 	Box2DDebugRenderer debugRenderer;
 
 	public Array<ResourceItem> resources;
+	public Array<Entity> entities;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -56,7 +61,11 @@ public class SpaceScreen implements Screen {
 		Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
 		resources = new Array<ResourceItem>();
-
+		entities = new Array<Entity>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
+			resources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+		}
+		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 	}
 	
@@ -81,18 +90,30 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.position.set(spaceship.getPosition(), 0);
 		camera.update();
+
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
-		game.font.draw(game.batch, "Hello World!", 0, 0);
-		game.batch.end();
-
-		game.batch.begin();
 		spaceship.render();
-		for(ResourceItem r : resources)
+		for(Entity r : entities)
 			r.render();
 		game.batch.end();
 
 		runPhysics(delta);
+
+		game.hudBatch.begin();
+		game.font.setColor(Color.BLACK);
+		game.font.setScale(1.1f);
+		game.font.draw(game.hudBatch, "Food Available:", 14, 52);
+		ShapeRenderer sr = new ShapeRenderer();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.BLACK);
+		sr.rect(10, 10, 200, 20);
+		sr.setColor(Color.BLUE);
+		sr.rect(14, 14, 192, 12);
+		sr.setColor(Color.GREEN);
+		sr.rect(14, 14, (int)(192f * resources.size / Constants.TOTAL_RESOURCE_FOOD), 12);
+		sr.end();
+		game.hudBatch.end();
 	}
 
 	@Override

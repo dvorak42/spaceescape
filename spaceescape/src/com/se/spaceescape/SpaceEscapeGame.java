@@ -12,10 +12,12 @@ public class SpaceEscapeGame extends Game {
 	Screen gameScreen;
 	
     public SpriteBatch batch;
+    public SpriteBatch hudBatch;
     public BitmapFont font;
 		
 	@Override
 	public void create() {
+		hudBatch = new SpriteBatch();
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		
