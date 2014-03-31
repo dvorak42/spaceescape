@@ -1,7 +1,6 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -46,29 +45,14 @@ public class Spaceship extends Entity {
 		body.applyAngularImpulse(1000 * dr, true);
 	}
 	
-	public void toss(Vector2 dir, float mass) {
+	public void toss(Vector2 dir, ResourceItem ri) {
 		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.6f);
 		Vector2 pos = body.getPosition().cpy().add(offset);
 		
-		BodyDef bd = new BodyDef();
-		bd.position.set(pos);
-		bd.type = BodyType.DynamicBody;
-
-		Body body = world.createBody(bd);
-		CircleShape circle = new CircleShape();
-		circle.setRadius(5);
+		ri.initBody(world, pos);
 		
-		FixtureDef fd = new FixtureDef();
-		fd.shape = circle;
-		fd.density = mass / (2 * MathUtils.PI * 100); 
-		fd.friction = 0.04f;
-		fd.isSensor = false;
-		
-		body.createFixture(fd);
 		Vector2 force = offset.cpy().nor().scl(100000);
-		body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
-		this.body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
-		circle.dispose();
-		
+		ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
+		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
 	}
 }

@@ -1,5 +1,9 @@
 package com.se.spaceescape;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -33,5 +37,12 @@ public class Utils {
 		createWall(w, Vector2.Zero, new Vector2(0, height));
 		createWall(w, new Vector2(width, 0), new Vector2(width, height));
 		createWall(w, new Vector2(0, height), new Vector2(width, height));
+	}
+
+	public static ResourceItem createResource(SpaceEscapeGame g, int rType) {
+		Sprite sprite = new Sprite(Constants.RESOURCE_IMGS[rType]);
+		ResourceItem ri = new ResourceItem(g, sprite, rType);
+		ri.setSize(new Vector2(16, 16));
+		return ri;
 	}
 }

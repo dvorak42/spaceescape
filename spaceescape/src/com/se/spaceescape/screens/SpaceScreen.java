@@ -15,13 +15,14 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.se.spaceescape.Entity;
+import com.se.spaceescape.ResourceItem;
 import com.se.spaceescape.SpaceEscapeGame;
 import com.se.spaceescape.SpaceGestureListener;
 import com.se.spaceescape.Spaceship;
 import com.se.spaceescape.Utils;
 
 public class SpaceScreen implements Screen {
-	SpaceEscapeGame game;
+	public SpaceEscapeGame game;
 
 	OrthographicCamera camera;
 
@@ -31,6 +32,8 @@ public class SpaceScreen implements Screen {
 	
 	World world;
 	Box2DDebugRenderer debugRenderer;
+
+	public Array<ResourceItem> resources;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -52,7 +55,7 @@ public class SpaceScreen implements Screen {
 		spaceship.setSize(new Vector2(80, 80));
 		Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
-		
+		resources = new Array<ResourceItem>();
 
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 	}
@@ -85,6 +88,8 @@ public class SpaceScreen implements Screen {
 
 		game.batch.begin();
 		spaceship.render();
+		for(ResourceItem r : resources)
+			r.render();
 		game.batch.end();
 
 		runPhysics(delta);
