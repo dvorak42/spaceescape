@@ -32,7 +32,7 @@ public class Spaceship extends Entity {
 		FixtureDef fd = new FixtureDef();
 		fd.shape = circle;
 		fd.density = 0.05f; 
-		fd.friction = 0.04f;
+		fd.friction = 0.05f;
 
 		body.createFixture(fd);
 		body.setUserData(this);
@@ -47,7 +47,7 @@ public class Spaceship extends Entity {
 	}
 	
 	public void toss(Vector2 dir, float mass) {
-		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.5f);
+		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.6f);
 		Vector2 pos = body.getPosition().cpy().add(offset);
 		
 		BodyDef bd = new BodyDef();
@@ -62,10 +62,12 @@ public class Spaceship extends Entity {
 		fd.shape = circle;
 		fd.density = mass / (2 * MathUtils.PI * 100); 
 		fd.friction = 0.04f;
-		fd.isSensor = true;
+		fd.isSensor = false;
 		
 		body.createFixture(fd);
-		
+		Vector2 force = offset.cpy().nor().scl(100000);
+		body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
+		this.body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
 		circle.dispose();
 		
 	}
