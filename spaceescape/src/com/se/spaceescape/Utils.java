@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Utils {
-	
 	public static Body createWall(World w, Vector2 start, Vector2 end) {
 		BodyDef bd = new BodyDef();
 		bd.position.set(start);

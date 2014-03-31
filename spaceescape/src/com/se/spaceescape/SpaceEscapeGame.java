@@ -34,6 +34,7 @@ public class SpaceEscapeGame extends Game {
 	@Override
 	public void dispose() {
 		batch.dispose();
+		hudBatch.dispose();
 		font.dispose();
 	}
 }
