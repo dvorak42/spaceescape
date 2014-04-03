@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -31,6 +32,7 @@ public class SpaceScreen implements Screen {
 	OrthographicCamera camera;
 
 	Texture spaceshipTexture;
+	Texture backgroundTexture;
 	
 	public Spaceship spaceship;
 	
@@ -52,8 +54,11 @@ public class SpaceScreen implements Screen {
 		camera = new OrthographicCamera(w, h);
 		camera.zoom = 0.1f*5;
 		
-		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceship.png"));
+		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+		backgroundTexture = new Texture(Gdx.files.internal("art/space.png"));
+		backgroundTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		
 		Sprite spaceshipSprite = new Sprite(spaceshipTexture);
 		spaceship = new Spaceship(g, spaceshipSprite);
@@ -90,6 +95,13 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.position.set(spaceship.getPosition(), 0);
 		camera.update();
+		
+		game.backgroundBatch.begin();
+		int tilecount = 6;
+		game.backgroundBatch.draw(backgroundTexture, -spaceship.getPosition().x, -spaceship.getPosition().y,
+				backgroundTexture.getWidth() * tilecount, backgroundTexture.getHeight() * tilecount,
+				0, tilecount, tilecount, 0);
+		game.backgroundBatch.end();
 
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
