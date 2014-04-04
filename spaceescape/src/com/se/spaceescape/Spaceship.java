@@ -1,6 +1,7 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -9,38 +10,32 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-public class Spaceship extends Entity {
-	Body body;
-	World world;
-	
+public class Spaceship extends PhysicalEntity {
 	public Spaceship(SpaceEscapeGame g, Sprite s) {
 		super(g, s);
 	}
 	
+	@Override
 	public void initBody(World w, Vector2 pos) {
-		setPosition(pos);
-		world = w;
+		super.initBody(w, pos);
+
 		BodyDef bd = new BodyDef();
 		bd.position.set(pos);
 		bd.type = BodyType.DynamicBody;
 
 		body = w.createBody(bd);
-		CircleShape circle = new CircleShape();
-		circle.setRadius(sprite.getWidth() * 0.45f);
 
 		FixtureDef fd = new FixtureDef();
-		fd.shape = circle;
-		fd.density = 0.05f; 
-		fd.friction = 0.05f;
-
-		body.createFixture(fd);
-		body.setUserData(this);
+	    fd.density = 0.1f;
+	    fd.friction = 0.5f;
+	    fd.restitution = 0.3f;
+	    Utils.mainBodies.attachFixture(body, "spaceshuttle", fd, sprite.getWidth());
+	    modelOrigin = Utils.mainBodies.getOrigin("spaceshuttle", sprite.getWidth());
+	    
+	    body.setUserData(this);
 		body.setAngularDamping(0.2f);
-		
-		circle.dispose();
 	}
 	
-	@Override
 	public void rotate(float dr) {
 		body.applyAngularImpulse(1000 * dr, true);
 	}

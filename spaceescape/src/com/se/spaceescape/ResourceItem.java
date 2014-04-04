@@ -10,11 +10,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-public class ResourceItem extends Entity {
+public class ResourceItem extends PhysicalEntity {
 	int type;
 	float mass;
-	World world;
-	Body body;
 	
 	public ResourceItem(SpaceEscapeGame g, Sprite s, int rType) {
 		super(g, s);
@@ -22,25 +20,22 @@ public class ResourceItem extends Entity {
 		mass = 100;
 	}
 	
+	@Override
 	public void initBody(World w, Vector2 pos) {
-		setPosition(pos);
-		world = w;
+		super.initBody(w, pos);
+
 		BodyDef bd = new BodyDef();
 		bd.position.set(pos);
 		bd.type = BodyType.DynamicBody;
 
 		body = w.createBody(bd);
-		CircleShape circle = new CircleShape();
-		circle.setRadius(sprite.getWidth() * 0.45f);
 
 		FixtureDef fd = new FixtureDef();
-		fd.shape = circle;
-		fd.density = mass / (2 * MathUtils.PI * circle.getRadius() * circle.getRadius()); 
+		fd.density = 1.0f; 
 		fd.friction = 0.05f;
+	    Utils.mainBodies.attachFixture(body, "bread", fd, sprite.getWidth());
 
 		body.createFixture(fd);
 		body.setUserData(this);
-		
-		circle.dispose();
 	}
 }

@@ -77,23 +77,13 @@ public class SpaceScreen implements Screen {
 	public void runPhysics(float delta) {
 		debugRenderer.render(world, camera.combined);
 		world.step(1/60f, 6, 2);
-		Array<Body> bodies = new Array<Body>();
-		world.getBodies(bodies);
-
-		for(Body b : bodies) {
-			Entity e = (Entity)b.getUserData();
-			if(e != null) {
-				e.setPosition(b.getPosition());
-				e.setRotation(MathUtils.radiansToDegrees * b.getAngle());
-			}
-		}
 	}
 
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		camera.position.set(spaceship.getPosition(), 0);
+		camera.position.set(spaceship.body.getWorldCenter(), 0);
 		camera.update();
 		
 		game.backgroundBatch.begin();
