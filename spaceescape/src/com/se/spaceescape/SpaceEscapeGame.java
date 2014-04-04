@@ -13,12 +13,14 @@ public class SpaceEscapeGame extends Game {
 	
     public SpriteBatch batch;
     public SpriteBatch hudBatch;
+    public SpriteBatch backgroundBatch;
     public BitmapFont font;
 		
 	@Override
 	public void create() {
 		hudBatch = new SpriteBatch();
 		batch = new SpriteBatch();
+		backgroundBatch = new SpriteBatch();
 		font = new BitmapFont();
 		
 		pauseScreen = new PauseScreen(this);
@@ -35,6 +37,7 @@ public class SpaceEscapeGame extends Game {
 	public void dispose() {
 		batch.dispose();
 		hudBatch.dispose();
+		backgroundBatch.dispose();
 		font.dispose();
 	}
 }

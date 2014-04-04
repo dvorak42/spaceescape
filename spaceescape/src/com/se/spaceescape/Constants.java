@@ -12,7 +12,7 @@ public class Constants {
 	public static final int TOTAL_RESOURCE_FOOD = 16;
 	
 	static {
-		RESOURCE_IMGS[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/food.png"));
+		RESOURCE_IMGS[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/bread.png"));
 		RESOURCE_IMGS[RESOURCE_FOOD].setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 }
