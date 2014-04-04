@@ -41,8 +41,8 @@ public class Spaceship extends PhysicalEntity {
 	}
 	
 	public void toss(Vector2 dir, ResourceItem ri) {
-		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.6f);
-		Vector2 pos = body.getPosition().cpy().add(offset);
+		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.8f);
+		Vector2 pos = body.getWorldCenter().cpy().add(offset);
 		
 		ri.initBody(world, pos);
 		

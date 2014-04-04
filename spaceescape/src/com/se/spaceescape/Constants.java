@@ -9,7 +9,7 @@ public class Constants {
 	public static final int RESOURCE_FOOD = 1;
 	public static final int NUM_RESOURCES = 8;
 	public static final Texture[] RESOURCE_IMGS = new Texture[NUM_RESOURCES];
-	public static final int TOTAL_RESOURCE_FOOD = 16;
+	public static final int TOTAL_RESOURCE_FOOD = 160;
 	
 	static {
 		RESOURCE_IMGS[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/bread.png"));
