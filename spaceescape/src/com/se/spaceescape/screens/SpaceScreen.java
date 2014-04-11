@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
+import com.se.spaceescape.PhysicalEntity;
 import com.se.spaceescape.Planet;
 import com.se.spaceescape.ResourceItem;
 import com.se.spaceescape.SpaceContactListener;
@@ -56,6 +57,8 @@ public class SpaceScreen implements Screen {
 	private boolean SEGMENTED_UI = true;
 	private boolean SHADOWED = true;
 	
+	ShapeRenderer sr;
+	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
 		
@@ -69,6 +72,8 @@ public class SpaceScreen implements Screen {
 		
 		camera = new OrthographicCamera(w, h);
 		camera.zoom = 0.1f*5;
+		
+		sr = new ShapeRenderer();
 		
 		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -101,34 +106,54 @@ public class SpaceScreen implements Screen {
 			powerResources.add(Utils.createResource(game, Constants.RESOURCE_POWER));
 		}
 		
-		planets.add(Utils.createPlanet(game, world, "planet1", 150, new Vector2(300, 300)));
-		planets.add(Utils.createPlanet(game, world, "planet2", 100, new Vector2(600, 600)));
+		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(300, 300));
+		for(int i = 0; i < 8; i++)
+			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
+		planets.add(p);
+		entities.addAll(p.getOrbitters());
+
+		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(600, 600));
+		for(int i = 0; i < 8; i++)
+			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+		planets.add(p);
+		entities.addAll(p.getOrbitters());
+
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 	}
 	
 	public void runPhysics(float delta) {
-		for(Body b : toDestroy)
+		for(Body b : toDestroy) {
 			world.destroyBody(b);
-		toDestroy = new Array<Body>();
-		
-		Array<Body> bodies = new Array<Body>();
-		world.getBodies(bodies);
-		for(Body b : bodies) {
-			if(b.getUserData() instanceof Spaceship || b.getUserData() instanceof Planet)
-				continue;
-			Vector2 p1 = b.getWorldCenter();
-			Vector2 tf = new Vector2();
 			for(Planet p : planets) {
-				Vector2 p2 = p.body.getWorldCenter();
-				Vector2 dp = p2.cpy().sub(p1);
-				float force = 10000000 * b.getMass() / dp.len2();
-				if(dp.len() > p.altitude)
-					tf.add(dp.nor().scl(force));
-				else
-					tf.add(dp.nor().scl(0.25f * force).rotate(115));
+				if(b.getUserData() instanceof PhysicalEntity)
+					p.getOrbitters().removeValue((PhysicalEntity)b.getUserData(), false);
 			}
-			b.applyForce(tf, p1, true);
 		}
+		toDestroy = new Array<Body>();
+
+		for(Planet p : planets) {
+			p.runOrbit();
+		}
+		
+		//TODO: Code for attraction of items.
+//		Array<Body> bodies = new Array<Body>();
+//		world.getBodies(bodies);
+//		for(Body b : bodies) {
+//			if(b.getUserData() instanceof Spaceship || b.getUserData() instanceof Planet)
+//				continue;
+//			Vector2 p1 = b.getWorldCenter();
+//			Vector2 tf = new Vector2();
+//			for(Planet p : planets) {
+//				Vector2 p2 = p.body.getWorldCenter();
+//				Vector2 dp = p2.cpy().sub(p1);
+//				float force = 10000000 * b.getMass() / dp.len2();
+//				if(dp.len() > p.altitude)
+//					tf.add(dp.nor().scl(force));
+//				else
+//					tf.add(dp.nor().scl(0.25f * force).rotate(115));
+//			}
+//			b.applyForce(tf, p1, true);
+//		}
 		world.step(1/60f, 6, 2);
 		debugRenderer.render(world, camera.combined);
 	}
@@ -156,6 +181,13 @@ public class SpaceScreen implements Screen {
 			r.render();
 		game.batch.end();
 
+		sr.setProjectionMatrix(camera.combined);
+		sr.begin(ShapeType.Filled);
+		for(Entity p : planets) {
+			// TODO: Draw HUD elements
+		}
+		sr.end();
+		
 		runPhysics(delta);
 
 		// We have to end all SpriteBatches before we start using the ShapeRenderer
