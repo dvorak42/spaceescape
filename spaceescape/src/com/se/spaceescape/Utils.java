@@ -44,8 +44,9 @@ public class Utils {
 
 	public static ResourceItem createResource(SpaceEscapeGame g, int rType) {
 		ArrayList<Texture> rTextures = Constants.RESOURCE_IMGS.get(rType);
-		Sprite sprite = new Sprite(rTextures.get(MathUtils.random(rTextures.size() - 1)));
-		ResourceItem ri = new ResourceItem(g, sprite, rType);
+		int variety = MathUtils.random(rTextures.size() - 1);
+		Sprite sprite = new Sprite(rTextures.get(variety));
+		ResourceItem ri = new ResourceItem(g, sprite, rType, Constants.RESOURCE_NAMES.get(rType).get(variety));
 		ri.setSize(new Vector2(16, 16));
 		return ri;
 	}

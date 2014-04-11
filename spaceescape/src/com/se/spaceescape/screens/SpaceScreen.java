@@ -39,12 +39,22 @@ public class SpaceScreen implements Screen {
 	
 	World world;
 	Box2DDebugRenderer debugRenderer;
+	
+	public int selectedResource = Constants.RESOURCE_FOOD;
 
-	public Array<ResourceItem> resources;
+	public Array<ResourceItem> foodResources;
+	public Array<ResourceItem> oxygenResources;
+	public Array<ResourceItem> sanityResources;
+	public Array<ResourceItem> powerResources;
 	public Array<Entity> entities;
 	public Array<Planet> planets;
 
 	public Array<Body> toDestroy;
+	
+	// TEMP VARIABLES FOR CHOOSING UI
+	// TODO: REMOVE THIS AND CHOOSE
+	private boolean SEGMENTED_UI = true;
+	private boolean SHADOWED = true;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -58,7 +68,7 @@ public class SpaceScreen implements Screen {
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.zoom = 1;//0.1f*5;
+		camera.zoom = 0.1f*5;
 		
 		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -71,12 +81,24 @@ public class SpaceScreen implements Screen {
 		spaceship.setSize(new Vector2(80, 80));
 		Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
-		resources = new Array<ResourceItem>();
 		entities = new Array<Entity>();
 		planets = new Array<Planet>();
 		toDestroy = new Array<Body>();
+		foodResources = new Array<ResourceItem>();
 		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
-			resources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+			foodResources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+		}
+		oxygenResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
+			oxygenResources.add(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+		}
+		sanityResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
+			sanityResources.add(Utils.createResource(game, Constants.RESOURCE_SANITY));
+		}
+		powerResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_POWER; i++) {
+			powerResources.add(Utils.createResource(game, Constants.RESOURCE_POWER));
 		}
 		
 		planets.add(Utils.createPlanet(game, world, "planet1", 150, new Vector2(300, 300)));
@@ -95,16 +117,17 @@ public class SpaceScreen implements Screen {
 			if(b.getUserData() instanceof Spaceship || b.getUserData() instanceof Planet)
 				continue;
 			Vector2 p1 = b.getWorldCenter();
+			Vector2 tf = new Vector2();
 			for(Planet p : planets) {
 				Vector2 p2 = p.body.getWorldCenter();
 				Vector2 dp = p2.cpy().sub(p1);
 				float force = 10000000 * b.getMass() / dp.len2();
 				if(dp.len() > p.altitude)
-					b.applyForce(dp.nor().scl(force), p1, true);
+					tf.add(dp.nor().scl(force));
 				else
-					b.applyForce(dp.nor().scl(0.25f * force).rotate(115), p1, true);
-
-			}			
+					tf.add(dp.nor().scl(0.25f * force).rotate(115));
+			}
+			b.applyForce(tf, p1, true);
 		}
 		world.step(1/60f, 6, 2);
 		debugRenderer.render(world, camera.combined);
@@ -135,19 +158,78 @@ public class SpaceScreen implements Screen {
 
 		runPhysics(delta);
 
-		game.hudBatch.begin();
-		game.font.setColor(Color.BLACK);
-		game.font.setScale(1.1f);
-		game.font.draw(game.hudBatch, "Food Available:", 14, 52);
+		// We have to end all SpriteBatches before we start using the ShapeRenderer
+		// or we will get side effects when choosing the colors. As per:
+		// https://stackoverflow.com/questions/16381106/libgdx-shaperenderer-in-group-draw-renders-in-wrong-colour
 		ShapeRenderer sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.BLACK);
-		sr.rect(10, 10, 200, 20);
-		sr.setColor(Color.BLUE);
-		sr.rect(14, 14, 192, 12);
-		sr.setColor(Color.GREEN);
-		sr.rect(14, 14, (int)(192f * resources.size / Constants.TOTAL_RESOURCE_FOOD), 12);
+		int testX = 50;
+		int testY = 100;
+		int testOffset = 100;
+		if (SEGMENTED_UI) {
+			sr.setColor(Color.WHITE);
+			sr.circle(testX, testY, 36);
+			sr.circle(testX, testY+testOffset, 36);
+			sr.circle(testX, testY+2*testOffset, 36);
+			sr.circle(testX, testY+3*testOffset, 36);
+			sr.setColor(Color.YELLOW);
+			sr.circle(testX, testY+(selectedResource-1)*testOffset, 36);
+			sr.setColor(Color.GREEN);
+			float arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
+			for (int i = 0; i < foodResources.size; i++) {
+				sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.BLUE);
+			arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
+			for (int i = 0; i < oxygenResources.size; i++) {
+				sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.PINK);
+			arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
+			for (int i = 0; i < sanityResources.size; i++) {
+				sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.RED);
+			arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
+			for (int i = 0; i < powerResources.size; i++) {
+				sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			if (SHADOWED) {
+				sr.setColor(Color.GRAY);
+				arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
+				for (int i = foodResources.size; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
+					sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
+				for (int i = oxygenResources.size; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
+					sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
+				for (int i = sanityResources.size; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
+					sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
+				for (int i = powerResources.size; i < Constants.TOTAL_RESOURCE_POWER; i++) {
+					sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+			}
+			sr.setColor(Color.WHITE);
+			sr.circle(testX, testY, 24);
+			sr.circle(testX, testY+testOffset, 24);
+			sr.circle(testX, testY+2*testOffset, 24);
+			sr.circle(testX, testY+3*testOffset, 24);
+			sr.setColor(Color.YELLOW);
+			sr.circle(testX, testY+(selectedResource-1)*testOffset, 24);
+		}
 		sr.end();
+		
+		game.hudBatch.begin();
+		testX -= 28;
+		testY -= 28;
+		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_FOOD).get(0), testX, testY, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0), testX-1, testY+testOffset+3, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_SANITY).get(0), testX+3, testY+2*testOffset+6, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_POWER).get(0), testX+4, testY+3*testOffset-2, 54, 54);
 		game.hudBatch.end();
 	}
 

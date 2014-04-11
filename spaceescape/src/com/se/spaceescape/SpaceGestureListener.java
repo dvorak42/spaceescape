@@ -11,6 +11,10 @@ public class SpaceGestureListener implements GestureListener {
 	SpaceScreen screen;
 	Vector2 lastPress;
 	
+	int testX = 50;
+	int testY = 100;
+	int testOffset = 100;
+	
 	public SpaceGestureListener(SpaceScreen s) {
 		screen = s;
 	}
@@ -23,11 +27,21 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
-		if(x < Gdx.graphics.getWidth() / 2)
-			screen.spaceship.rotate(10);
-		else
-			screen.spaceship.rotate(-10);
-		// TODO Auto-generated method stub
+		y = Gdx.graphics.getHeight() - y;
+		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 1296) {
+			screen.selectedResource = Constants.RESOURCE_FOOD;
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 1296) {
+			screen.selectedResource = Constants.RESOURCE_OXYGEN;
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 1296) {
+			screen.selectedResource = Constants.RESOURCE_SANITY;
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
+			screen.selectedResource = Constants.RESOURCE_POWER;
+		} else {
+			if(x < Gdx.graphics.getWidth() / 2)
+				screen.spaceship.rotate(10);
+			else
+				screen.spaceship.rotate(-10);
+		}
 		return true;
 	}
 
@@ -45,13 +59,37 @@ public class SpaceGestureListener implements GestureListener {
 			if(f.testPoint(worldPress))
 				hit = true;
 		}
+		
 		if(hit) {
 			ResourceItem ri = null;
-			if(screen.resources.size > 0)
-				ri = screen.resources.pop();
-			if(ri != null) {
-				screen.entities.add(ri);
-				screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+			if (screen.selectedResource == Constants.RESOURCE_FOOD) {
+				if(screen.foodResources.size > 0)
+					ri = screen.foodResources.pop();
+				if(ri != null) {
+					screen.entities.add(ri);
+					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+				}
+			} else if (screen.selectedResource == Constants.RESOURCE_OXYGEN) {
+				if(screen.oxygenResources.size > 0)
+					ri = screen.oxygenResources.pop();
+				if(ri != null) {
+					screen.entities.add(ri);
+					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+				}
+			} else if (screen.selectedResource == Constants.RESOURCE_SANITY) {
+				if(screen.sanityResources.size > 0)
+					ri = screen.sanityResources.pop();
+				if(ri != null) {
+					screen.entities.add(ri);
+					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+				}
+			} else if (screen.selectedResource == Constants.RESOURCE_POWER) {
+				if(screen.powerResources.size > 0)
+					ri = screen.powerResources.pop();
+				if(ri != null) {
+					screen.entities.add(ri);
+					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
+				}
 			}
 			return true;
 		}

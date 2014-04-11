@@ -10,11 +10,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 public class ResourceItem extends PhysicalEntity {
 	int type;
 	float mass;
+	public String name;
 	
-	public ResourceItem(SpaceEscapeGame g, Sprite s, int rType) {
+	public ResourceItem(SpaceEscapeGame g, Sprite s, int rType, String n) {
 		super(g, s);
 		type = rType;
 		mass = 100;
+		name = n;
 	}
 	
 	@Override
@@ -30,9 +32,10 @@ public class ResourceItem extends PhysicalEntity {
 		FixtureDef fd = new FixtureDef();
 		fd.density = 1.0f; 
 		fd.friction = 0.05f;
-	    Utils.mainBodies.attachFixture(body, "bread", fd, sprite.getWidth());
-
-		body.createFixture(fd);
+		
+	    Utils.mainBodies.attachFixture(body, name, fd, sprite.getWidth());
+	    body.setAngularDamping(2.0f);
+	    body.createFixture(fd);
 		body.setUserData(this);
 	}
 }
