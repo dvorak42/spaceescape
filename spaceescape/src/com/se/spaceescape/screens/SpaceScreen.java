@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -50,7 +51,7 @@ public class SpaceScreen implements Screen {
 	public Array<Entity> entities;
 	public Array<Planet> planets;
 
-	public Array<Body> toDestroy;
+	public Array<ResourceItem> toDestroy;
 	
 	// TEMP VARIABLES FOR CHOOSING UI
 	// TODO: REMOVE THIS AND CHOOSE
@@ -88,7 +89,7 @@ public class SpaceScreen implements Screen {
 		spaceship.initBody(world, new Vector2(500, 500));
 		entities = new Array<Entity>();
 		planets = new Array<Planet>();
-		toDestroy = new Array<Body>();
+		toDestroy = new Array<ResourceItem>();
 		foodResources = new Array<ResourceItem>();
 		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
 			foodResources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
@@ -122,14 +123,17 @@ public class SpaceScreen implements Screen {
 	}
 	
 	public void runPhysics(float delta) {
-		for(Body b : toDestroy) {
-			world.destroyBody(b);
+		while(toDestroy.size > 0) {
+			ResourceItem ri = toDestroy.pop();
+			world.destroyBody(ri.body);
+			ri.body.setUserData(null);
+			ri.body = null;
+			entities.removeValue(ri, true);
 			for(Planet p : planets) {
-				if(b.getUserData() instanceof PhysicalEntity)
-					p.getOrbitters().removeValue((PhysicalEntity)b.getUserData(), false);
+				p.getOrbitters().removeValue(ri, true);
 			}
 		}
-		toDestroy = new Array<Body>();
+
 
 		for(Planet p : planets) {
 			p.runOrbit();
@@ -165,12 +169,15 @@ public class SpaceScreen implements Screen {
 		camera.position.set(spaceship.body.getWorldCenter(), 0);
 		camera.update();
 		
+
 		game.backgroundBatch.begin();
 		int tilecount = 6;
 		game.backgroundBatch.draw(backgroundTexture, -spaceship.getPosition().x, -spaceship.getPosition().y,
 				backgroundTexture.getWidth() * tilecount, backgroundTexture.getHeight() * tilecount,
 				0, tilecount, tilecount, 0);
 		game.backgroundBatch.end();
+
+		runPhysics(delta);
 
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
@@ -180,15 +187,7 @@ public class SpaceScreen implements Screen {
 		for(Entity r : planets)
 			r.render();
 		game.batch.end();
-
-		sr.setProjectionMatrix(camera.combined);
-		sr.begin(ShapeType.Filled);
-		for(Entity p : planets) {
-			// TODO: Draw HUD elements
-		}
-		sr.end();
 		
-		runPhysics(delta);
 
 		// We have to end all SpriteBatches before we start using the ShapeRenderer
 		// or we will get side effects when choosing the colors. As per:
@@ -270,6 +269,7 @@ public class SpaceScreen implements Screen {
 		camera.viewportHeight = height;
 		camera.viewportWidth = width;
 		camera.update();
+		game.hudBatch.setProjectionMatrix(camera.combined);
 	}
 
 	@Override

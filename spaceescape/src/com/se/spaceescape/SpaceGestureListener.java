@@ -60,37 +60,24 @@ public class SpaceGestureListener implements GestureListener {
 				hit = true;
 		}
 		
+		ResourceItem ri = null;
 		if(hit) {
-			ResourceItem ri = null;
 			if (screen.selectedResource == Constants.RESOURCE_FOOD) {
 				if(screen.foodResources.size > 0)
 					ri = screen.foodResources.pop();
-				if(ri != null) {
-					screen.entities.add(ri);
-					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
-				}
 			} else if (screen.selectedResource == Constants.RESOURCE_OXYGEN) {
 				if(screen.oxygenResources.size > 0)
 					ri = screen.oxygenResources.pop();
-				if(ri != null) {
-					screen.entities.add(ri);
-					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
-				}
 			} else if (screen.selectedResource == Constants.RESOURCE_SANITY) {
 				if(screen.sanityResources.size > 0)
 					ri = screen.sanityResources.pop();
-				if(ri != null) {
-					screen.entities.add(ri);
-					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
-				}
 			} else if (screen.selectedResource == Constants.RESOURCE_POWER) {
 				if(screen.powerResources.size > 0)
 					ri = screen.powerResources.pop();
-				if(ri != null) {
-					screen.entities.add(ri);
-					screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
-				}
 			}
+		}
+		if(ri != null) {
+			screen.spaceship.toss(new Vector2(velocityX, -velocityY), ri);
 			return true;
 		}
 		return false;

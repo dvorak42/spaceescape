@@ -32,6 +32,8 @@ public class ResourceItem extends PhysicalEntity {
 		FixtureDef fd = new FixtureDef();
 		fd.density = 1.0f; 
 		fd.friction = 0.05f;
+		// TODO: Decide whether to use.
+		fd.isSensor = true;
 		
 	    Utils.mainBodies.attachFixture(body, name, fd, sprite.getWidth());
 	    body.setAngularDamping(2.0f);

@@ -50,18 +50,20 @@ public class Spaceship extends PhysicalEntity {
 		Vector2 force = offset.cpy().nor().scl(100000);
 		ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
+		screen.entities.add(ri);
 	}
 
 	public void acquire(ResourceItem ri) {
-		screen.toDestroy.add(ri.body);
+		if(screen.toDestroy.contains(ri, true))
+			return;
 		if(ri.type == Constants.RESOURCE_FOOD)
-			screen.foodResources.add(ri);
+			screen.foodResources.add(Utils.createResource(game, ri.type));
 		else if(ri.type == Constants.RESOURCE_OXYGEN)
-			screen.oxygenResources.add(ri);
+			screen.oxygenResources.add(Utils.createResource(game, ri.type));
 		else if(ri.type == Constants.RESOURCE_POWER)
-			screen.powerResources.add(ri);
+			screen.powerResources.add(Utils.createResource(game, ri.type));
 		else if(ri.type == Constants.RESOURCE_SANITY)
-			screen.sanityResources.add(ri);
-		screen.entities.removeValue(ri, false);
+			screen.sanityResources.add(Utils.createResource(game, ri.type));
+		screen.toDestroy.add(ri);
 	}
 }
