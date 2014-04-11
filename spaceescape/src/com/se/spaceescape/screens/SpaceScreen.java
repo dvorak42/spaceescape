@@ -1,8 +1,10 @@
 package com.se.spaceescape.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,6 +40,8 @@ public class SpaceScreen implements Screen {
 	Texture backgroundTexture;
 	
 	public Spaceship spaceship;
+	
+	public boolean paused = false;
 	
 	World world;
 	Box2DDebugRenderer debugRenderer;
@@ -107,22 +111,32 @@ public class SpaceScreen implements Screen {
 			powerResources.add(Utils.createResource(game, Constants.RESOURCE_POWER));
 		}
 		
-		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(300, 300));
+		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(200, 200));
 		for(int i = 0; i < 8; i++)
 			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
 		planets.add(p);
 		entities.addAll(p.getOrbitters());
 
-		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(600, 600));
+		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
 		for(int i = 0; i < 8; i++)
 			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
 		planets.add(p);
 		entities.addAll(p.getOrbitters());
 
+		p = Utils.createPlanet(game, world, "goldplanet", 50, new Vector2(50, 800));
+		p.endPlanet = true;
+		planets.add(p);
+		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
+		
+		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
+		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
+		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
+		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
 	}
 	
 	public void runPhysics(float delta) {
+		if(!paused) {
 		while(toDestroy.size > 0) {
 			ResourceItem ri = toDestroy.pop();
 			world.destroyBody(ri.body);
@@ -159,7 +173,11 @@ public class SpaceScreen implements Screen {
 //			b.applyForce(tf, p1, true);
 //		}
 		world.step(1/60f, 6, 2);
-		debugRenderer.render(world, camera.combined);
+		
+		if(foodResources.size == 0 && oxygenResources.size == 0 && powerResources.size == 0 && sanityResources.size == 0)
+			game.setScreen(new LoseScreen(game, this));
+	}
+		//debugRenderer.render(world, camera.combined);
 	}
 
 	@Override
@@ -254,6 +272,7 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 		
+		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
 		testX -= 28;
 		testY -= 28;
@@ -262,6 +281,9 @@ public class SpaceScreen implements Screen {
 		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_SANITY).get(0), testX+3, testY+2*testOffset+6, 54, 54);
 		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_POWER).get(0), testX+4, testY+3*testOffset-2, 54, 54);
 		game.hudBatch.end();
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.P))
+			game.setScreen(game.pauseScreen);
 	}
 
 	@Override

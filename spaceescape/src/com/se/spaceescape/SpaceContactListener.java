@@ -17,6 +17,12 @@ public class SpaceContactListener implements ContactListener {
 		} else if(b.getUserData() instanceof Spaceship && a.getUserData() instanceof ResourceItem) {
 			((Spaceship)b.getUserData()).acquire((ResourceItem)a.getUserData());			
 		}
+		
+		if(a.getUserData() instanceof Spaceship && b.getUserData() instanceof Planet) {
+			((Planet)b.getUserData()).visited();
+		} else if(b.getUserData() instanceof Spaceship && a.getUserData() instanceof Planet) {
+			((Planet)a.getUserData()).visited();
+		}
 	}
 
 	@Override

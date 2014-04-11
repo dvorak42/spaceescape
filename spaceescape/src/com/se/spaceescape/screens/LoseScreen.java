@@ -1,5 +1,6 @@
 package com.se.spaceescape.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -9,11 +10,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.se.spaceescape.SpaceEscapeGame;
 
-public class PauseScreen implements Screen {
+public class LoseScreen implements Screen {
 	SpaceEscapeGame game;
 	SpaceScreen parent;
 	
-	public PauseScreen(SpaceEscapeGame g, SpaceScreen parent) {
+	public LoseScreen(SpaceEscapeGame g, SpaceScreen parent) {
 		game = g;
 		this.parent = parent;
 	}
@@ -28,11 +29,12 @@ public class PauseScreen implements Screen {
 		
 		game.menuBatch.begin();
 		game.font.setColor(Color.BLACK);
-		game.font.draw(game.menuBatch, "Press space to resume", 10, 30);
+		game.font.draw(game.menuBatch, "You lose!", 10, 60);
+		game.font.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
 		game.menuBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-			game.setScreen(parent);
+			Gdx.app.exit();
 	}
 
 	@Override

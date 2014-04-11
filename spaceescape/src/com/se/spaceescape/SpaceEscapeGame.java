@@ -9,11 +9,13 @@ import com.se.spaceescape.screens.PauseScreen;
 import com.se.spaceescape.screens.SpaceScreen;
 
 public class SpaceEscapeGame extends Game {
-	Screen pauseScreen;
-	Screen gameScreen;
+	public PauseScreen pauseScreen;
+	public SpaceScreen gameScreen;
 	
     public SpriteBatch batch;
     public SpriteBatch hudBatch;
+    public SpriteBatch menuBatch;
+
     public SpriteBatch backgroundBatch;
     public BitmapFont font;
 		
@@ -23,10 +25,11 @@ public class SpaceEscapeGame extends Game {
 		hudBatch = new SpriteBatch();
 		batch = new SpriteBatch();
 		backgroundBatch = new SpriteBatch();
+		menuBatch = new SpriteBatch();
 		font = new BitmapFont();
 		
-		pauseScreen = new PauseScreen(this);
 		gameScreen = new SpaceScreen(this);
+		pauseScreen = new PauseScreen(this, gameScreen);
 		setScreen(gameScreen);
 	}
 	

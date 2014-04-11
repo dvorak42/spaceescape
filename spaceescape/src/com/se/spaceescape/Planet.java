@@ -9,11 +9,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.utils.Array;
+import com.se.spaceescape.screens.WinScreen;
 
 public class Planet extends PhysicalEntity {
 	public float altitude;
 	public String fname;
 	Array<PhysicalEntity> orbitters;
+	public boolean endPlanet;
 	
 	public Planet(SpaceEscapeGame g, Sprite s, float alt, String fn) {
 		super(g, s);
@@ -62,5 +64,10 @@ public class Planet extends PhysicalEntity {
 			else
 				b.applyForce(dp.nor().scl(0.25f * force).rotate(115), p1, true);
 		}
+	}
+	
+	public void visited() {
+		if(endPlanet)
+			game.setScreen(new WinScreen(game, game.gameScreen));
 	}
 }
