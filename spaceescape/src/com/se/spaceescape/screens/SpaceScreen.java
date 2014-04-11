@@ -37,8 +37,15 @@ public class SpaceScreen implements Screen {
 	World world;
 	Box2DDebugRenderer debugRenderer;
 
-	public Array<ResourceItem> resources;
+	public Array<ResourceItem> foodResources;
+	public Array<ResourceItem> oxygenResources;
+	public Array<ResourceItem> sanityResources;
+	public Array<ResourceItem> powerResources;
 	public Array<Entity> entities;
+	
+	// TEMP VARIABLES FOR CHOOSING UI
+	// TODO: REMOVE THIS AND CHOOSE
+	private boolean SEGMENTED_UI = true;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -63,10 +70,23 @@ public class SpaceScreen implements Screen {
 		spaceship.setSize(new Vector2(80, 80));
 		Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
-		resources = new Array<ResourceItem>();
 		entities = new Array<Entity>();
+		
+		foodResources = new Array<ResourceItem>();
 		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
-			resources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+			foodResources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+		}
+		oxygenResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
+			oxygenResources.add(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+		}
+		sanityResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
+			sanityResources.add(Utils.createResource(game, Constants.RESOURCE_SANITY));
+		}
+		powerResources = new Array<ResourceItem>();
+		for(int i = 0; i < Constants.TOTAL_RESOURCE_POWER; i++) {
+			powerResources.add(Utils.createResource(game, Constants.RESOURCE_POWER));
 		}
 		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
@@ -100,19 +120,55 @@ public class SpaceScreen implements Screen {
 
 		runPhysics(delta);
 
-		game.hudBatch.begin();
-		game.font.setColor(Color.BLACK);
-		game.font.setScale(1.1f);
-		game.font.draw(game.hudBatch, "Food Available:", 14, 52);
+		// We have to end all SpriteBatches before we start using the ShapeRenderer
+		// or we will get side effects when choosing the colors. As per:
+		// https://stackoverflow.com/questions/16381106/libgdx-shaperenderer-in-group-draw-renders-in-wrong-colour
 		ShapeRenderer sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.BLACK);
-		sr.rect(10, 10, 200, 20);
-		sr.setColor(Color.BLUE);
-		sr.rect(14, 14, 192, 12);
-		sr.setColor(Color.GREEN);
-		sr.rect(14, 14, (int)(192f * resources.size / Constants.TOTAL_RESOURCE_FOOD), 12);
+		int testX = 50;
+		int testY = 100;
+		int testOffset = 100;
+		if (SEGMENTED_UI) {
+			sr.setColor(Color.WHITE);
+			sr.circle(testX, testY, 36);
+			sr.circle(testX, testY+testOffset, 36);
+			sr.circle(testX, testY+2*testOffset, 36);
+			sr.circle(testX, testY+3*testOffset, 36);			
+			sr.setColor(Color.GREEN);
+			float arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
+			for (int i = 0; i < foodResources.size; i++) {
+				sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.BLUE);
+			arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
+			for (int i = 0; i < oxygenResources.size; i++) {
+				sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.PINK);
+			arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
+			for (int i = 0; i < sanityResources.size; i++) {
+				sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.RED);
+			arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
+			for (int i = 0; i < powerResources.size; i++) {
+				sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+			}
+			sr.setColor(Color.WHITE);
+			sr.circle(testX, testY, 24);
+			sr.circle(testX, testY+testOffset, 24);
+			sr.circle(testX, testY+2*testOffset, 24);
+			sr.circle(testX, testY+3*testOffset, 24);
+		}
 		sr.end();
+		
+		game.hudBatch.begin();
+		testX -= 28;
+		testY -= 28;
+		game.hudBatch.draw(Constants.RESOURCE_IMGS[Constants.RESOURCE_FOOD], testX, testY, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS[Constants.RESOURCE_OXYGEN], testX-1, testY+testOffset+3, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS[Constants.RESOURCE_SANITY], testX+3, testY+2*testOffset+6, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS[Constants.RESOURCE_POWER], testX+4, testY+3*testOffset-2, 54, 54);
 		game.hudBatch.end();
 	}
 
