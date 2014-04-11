@@ -36,6 +36,8 @@ public class SpaceScreen implements Screen {
 	
 	World world;
 	Box2DDebugRenderer debugRenderer;
+	
+	public int selectedResource = Constants.RESOURCE_FOOD;
 
 	public Array<ResourceItem> foodResources;
 	public Array<ResourceItem> oxygenResources;
@@ -46,6 +48,7 @@ public class SpaceScreen implements Screen {
 	// TEMP VARIABLES FOR CHOOSING UI
 	// TODO: REMOVE THIS AND CHOOSE
 	private boolean SEGMENTED_UI = true;
+	private boolean SHADOWED = true;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -133,7 +136,9 @@ public class SpaceScreen implements Screen {
 			sr.circle(testX, testY, 36);
 			sr.circle(testX, testY+testOffset, 36);
 			sr.circle(testX, testY+2*testOffset, 36);
-			sr.circle(testX, testY+3*testOffset, 36);			
+			sr.circle(testX, testY+3*testOffset, 36);
+			sr.setColor(Color.YELLOW);
+			sr.circle(testX, testY+(selectedResource-1)*testOffset, 36);
 			sr.setColor(Color.GREEN);
 			float arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
 			for (int i = 0; i < foodResources.size; i++) {
@@ -154,11 +159,32 @@ public class SpaceScreen implements Screen {
 			for (int i = 0; i < powerResources.size; i++) {
 				sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
 			}
+			if (SHADOWED) {
+				sr.setColor(Color.GRAY);
+				arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
+				for (int i = foodResources.size; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
+					sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
+				for (int i = oxygenResources.size; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
+					sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
+				for (int i = sanityResources.size; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
+					sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+				arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
+				for (int i = powerResources.size; i < Constants.TOTAL_RESOURCE_POWER; i++) {
+					sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
+				}
+			}
 			sr.setColor(Color.WHITE);
 			sr.circle(testX, testY, 24);
 			sr.circle(testX, testY+testOffset, 24);
 			sr.circle(testX, testY+2*testOffset, 24);
 			sr.circle(testX, testY+3*testOffset, 24);
+			sr.setColor(Color.YELLOW);
+			sr.circle(testX, testY+(selectedResource-1)*testOffset, 24);
 		}
 		sr.end();
 		
