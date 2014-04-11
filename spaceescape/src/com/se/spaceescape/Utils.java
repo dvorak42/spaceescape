@@ -1,9 +1,12 @@
 package com.se.spaceescape;
 
-import com.se.spaceescape.external.BodyEditorLoader;
+import java.util.ArrayList;
 
+import com.se.spaceescape.external.BodyEditorLoader;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -40,9 +43,21 @@ public class Utils {
 	}
 
 	public static ResourceItem createResource(SpaceEscapeGame g, int rType) {
-		Sprite sprite = new Sprite(Constants.RESOURCE_IMGS[rType]);
+		ArrayList<Texture> rTextures = Constants.RESOURCE_IMGS.get(rType);
+		Sprite sprite = new Sprite(rTextures.get(MathUtils.random(rTextures.size() - 1)));
 		ResourceItem ri = new ResourceItem(g, sprite, rType);
 		ri.setSize(new Vector2(16, 16));
 		return ri;
+	}
+	
+	public static Vector2 worldSpace(Vector2 sPoint, Vector2 sCenter, float scale) {
+		return sPoint.cpy().sub(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2).scl(scale).add(sCenter);
+	}
+
+	public static Planet createPlanet(SpaceEscapeGame game, World world, String fname, int alt, Vector2 pos) {
+		Texture fPlanetTexture = new Texture(Gdx.files.internal("art/" + fname + ".png"));
+		Planet p = new Planet(game, new Sprite(fPlanetTexture), alt, fname);
+		p.initBody(world, pos);
+		return p;
 	}
 }

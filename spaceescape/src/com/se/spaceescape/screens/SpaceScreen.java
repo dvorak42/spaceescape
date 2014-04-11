@@ -13,12 +13,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
+import com.se.spaceescape.Planet;
 import com.se.spaceescape.ResourceItem;
+import com.se.spaceescape.SpaceContactListener;
 import com.se.spaceescape.SpaceEscapeGame;
 import com.se.spaceescape.SpaceGestureListener;
 import com.se.spaceescape.Spaceship;
@@ -27,7 +30,7 @@ import com.se.spaceescape.Utils;
 public class SpaceScreen implements Screen {
 	public SpaceEscapeGame game;
 
-	OrthographicCamera camera;
+	public OrthographicCamera camera;
 
 	Texture spaceshipTexture;
 	Texture backgroundTexture;
@@ -39,18 +42,23 @@ public class SpaceScreen implements Screen {
 
 	public Array<ResourceItem> resources;
 	public Array<Entity> entities;
+	public Array<Planet> planets;
+
+	public Array<Body> toDestroy;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
 		
 		world = new World(new Vector2(0, 0), true);
 		debugRenderer = new Box2DDebugRenderer();
+		
+		world.setContactListener(new SpaceContactListener());
 
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.zoom = 0.1f*5;
+		camera.zoom = 1;//0.1f*5;
 		
 		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -59,22 +67,47 @@ public class SpaceScreen implements Screen {
 		backgroundTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		
 		Sprite spaceshipSprite = new Sprite(spaceshipTexture);
-		spaceship = new Spaceship(g, spaceshipSprite);
+		spaceship = new Spaceship(g, this, spaceshipSprite);
 		spaceship.setSize(new Vector2(80, 80));
 		Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
 		resources = new Array<ResourceItem>();
 		entities = new Array<Entity>();
+		planets = new Array<Planet>();
+		toDestroy = new Array<Body>();
 		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
 			resources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
 		}
 		
+		planets.add(Utils.createPlanet(game, world, "planet1", 150, new Vector2(300, 300)));
+		planets.add(Utils.createPlanet(game, world, "planet2", 100, new Vector2(600, 600)));
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 	}
 	
 	public void runPhysics(float delta) {
-		debugRenderer.render(world, camera.combined);
+		for(Body b : toDestroy)
+			world.destroyBody(b);
+		toDestroy = new Array<Body>();
+		
+		Array<Body> bodies = new Array<Body>();
+		world.getBodies(bodies);
+		for(Body b : bodies) {
+			if(b.getUserData() instanceof Spaceship || b.getUserData() instanceof Planet)
+				continue;
+			Vector2 p1 = b.getWorldCenter();
+			for(Planet p : planets) {
+				Vector2 p2 = p.body.getWorldCenter();
+				Vector2 dp = p2.cpy().sub(p1);
+				float force = 10000000 * b.getMass() / dp.len2();
+				if(dp.len() > p.altitude)
+					b.applyForce(dp.nor().scl(force), p1, true);
+				else
+					b.applyForce(dp.nor().scl(0.25f * force).rotate(115), p1, true);
+
+			}			
+		}
 		world.step(1/60f, 6, 2);
+		debugRenderer.render(world, camera.combined);
 	}
 
 	@Override
@@ -95,6 +128,8 @@ public class SpaceScreen implements Screen {
 		game.batch.begin();
 		spaceship.render();
 		for(Entity r : entities)
+			r.render();
+		for(Entity r : planets)
 			r.render();
 		game.batch.end();
 

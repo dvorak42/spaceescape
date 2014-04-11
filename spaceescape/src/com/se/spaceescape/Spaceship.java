@@ -6,10 +6,14 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.se.spaceescape.screens.SpaceScreen;
 
 public class Spaceship extends PhysicalEntity {
-	public Spaceship(SpaceEscapeGame g, Sprite s) {
+	SpaceScreen screen;
+
+	public Spaceship(SpaceEscapeGame g, SpaceScreen screen, Sprite s) {
 		super(g, s);
+		this.screen = screen;
 	}
 	
 	@Override
@@ -46,5 +50,11 @@ public class Spaceship extends PhysicalEntity {
 		Vector2 force = offset.cpy().nor().scl(100000);
 		ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
+	}
+
+	public void acquire(ResourceItem ri) {
+		screen.toDestroy.add(ri.body);
+		screen.resources.add(ri);
+		screen.entities.removeValue(ri, false);
 	}
 }

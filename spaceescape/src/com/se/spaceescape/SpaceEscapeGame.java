@@ -2,6 +2,7 @@ package com.se.spaceescape;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.se.spaceescape.screens.PauseScreen;
@@ -18,6 +19,7 @@ public class SpaceEscapeGame extends Game {
 		
 	@Override
 	public void create() {
+		Texture.setEnforcePotImages(false);
 		hudBatch = new SpriteBatch();
 		batch = new SpriteBatch();
 		backgroundBatch = new SpriteBatch();
