@@ -3,8 +3,6 @@ package com.se.spaceescape;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 public class ResourceGenerator extends Entity {
 	float delay;

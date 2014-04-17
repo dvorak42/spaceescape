@@ -47,7 +47,6 @@ public class Spaceship extends PhysicalEntity {
 		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.8f);
 		Vector2 pos = body.getWorldCenter().cpy().add(offset);
 		targetAngle = dir.angle() + 90;
-		System.out.println(targetAngle);
 		ri.initBody(world, pos);
 		
 		Vector2 force = offset.cpy().nor().scl(100000);

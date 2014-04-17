@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.se.spaceescape.screens.SpaceScreen;
 
 public class SpaceGestureListener implements GestureListener {
@@ -41,7 +40,6 @@ public class SpaceGestureListener implements GestureListener {
 				Vector2 p1 = rg.getPosition();
 				Vector2 p2 = rg.getPosition().cpy().add(rg.getSize());
 				if(x > p1.x && x < p2.x && y > p1.y && y < p2.y) {
-					System.out.println("TAP");
 					rg.tap();
 				}
 			}
