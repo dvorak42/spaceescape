@@ -61,4 +61,9 @@ public class Utils {
 		p.initBody(world, pos);
 		return p;
 	}
+	
+	public static void addItem(SpaceEscapeGame game, int type) {
+		if(type <= Constants.NUM_RESOURCES && type > 0)
+			game.gameScreen.resources.get(type).add(Utils.createResource(game, type));
+	}
 }

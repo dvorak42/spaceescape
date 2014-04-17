@@ -35,8 +35,16 @@ public class SpaceGestureListener implements GestureListener {
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 1296) {
 			screen.selectedResource = Constants.RESOURCE_SANITY;
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
-			screen.selectedResource = Constants.RESOURCE_POWER;
+			screen.selectedResource = Constants.RESOURCE_WEAPONS;
 		} else {
+			for(ResourceGenerator rg : screen.generators) {
+				Vector2 p1 = rg.getPosition();
+				Vector2 p2 = rg.getPosition().cpy().add(rg.getSize());
+				if(x > p1.x && x < p2.x && y > p1.y && y < p2.y) {
+					System.out.println("TAP");
+					rg.tap();
+				}
+			}
 //			if(x < Gdx.graphics.getWidth() / 2)
 //				screen.spaceship.rotate(10);
 //			else
@@ -62,18 +70,9 @@ public class SpaceGestureListener implements GestureListener {
 		
 		ResourceItem ri = null;
 		if(hit) {
-			if (screen.selectedResource == Constants.RESOURCE_FOOD) {
-				if(screen.foodResources.size > 0)
-					ri = screen.foodResources.pop();
-			} else if (screen.selectedResource == Constants.RESOURCE_OXYGEN) {
-				if(screen.oxygenResources.size > 0)
-					ri = screen.oxygenResources.pop();
-			} else if (screen.selectedResource == Constants.RESOURCE_SANITY) {
-				if(screen.sanityResources.size > 0)
-					ri = screen.sanityResources.pop();
-			} else if (screen.selectedResource == Constants.RESOURCE_POWER) {
-				if(screen.powerResources.size > 0)
-					ri = screen.powerResources.pop();
+			if (screen.selectedResource > 0 && screen.selectedResource <= Constants.NUM_RESOURCES) {
+				if(screen.resources.get(screen.selectedResource).size > 0)
+					ri = screen.resources.get(screen.selectedResource).pop();
 			}
 		}
 		if(ri != null) {

@@ -59,14 +59,7 @@ public class Spaceship extends PhysicalEntity {
 	public void acquire(ResourceItem ri) {
 		if(screen.toDestroy.contains(ri, true))
 			return;
-		if(ri.type == Constants.RESOURCE_FOOD)
-			screen.foodResources.add(Utils.createResource(game, ri.type));
-		else if(ri.type == Constants.RESOURCE_OXYGEN)
-			screen.oxygenResources.add(Utils.createResource(game, ri.type));
-		else if(ri.type == Constants.RESOURCE_POWER)
-			screen.powerResources.add(Utils.createResource(game, ri.type));
-		else if(ri.type == Constants.RESOURCE_SANITY)
-			screen.sanityResources.add(Utils.createResource(game, ri.type));
+		Utils.addItem(game, ri.type);
 		screen.toDestroy.add(ri);
 	}
 }

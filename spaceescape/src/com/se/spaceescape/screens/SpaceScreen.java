@@ -24,6 +24,7 @@ import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
 import com.se.spaceescape.PhysicalEntity;
 import com.se.spaceescape.Planet;
+import com.se.spaceescape.ResourceGenerator;
 import com.se.spaceescape.ResourceItem;
 import com.se.spaceescape.SpaceContactListener;
 import com.se.spaceescape.SpaceEscapeGame;
@@ -48,10 +49,7 @@ public class SpaceScreen implements Screen {
 	
 	public int selectedResource = Constants.RESOURCE_FOOD;
 
-	public Array<ResourceItem> foodResources;
-	public Array<ResourceItem> oxygenResources;
-	public Array<ResourceItem> sanityResources;
-	public Array<ResourceItem> powerResources;
+	public Array<Array<ResourceItem>> resources;
 	public Array<Entity> entities;
 	public Array<Planet> planets;
 
@@ -63,6 +61,8 @@ public class SpaceScreen implements Screen {
 	private boolean SHADOWED = true;
 	
 	ShapeRenderer sr;
+	
+	public Array<ResourceGenerator> generators;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -94,22 +94,16 @@ public class SpaceScreen implements Screen {
 		entities = new Array<Entity>();
 		planets = new Array<Planet>();
 		toDestroy = new Array<ResourceItem>();
-		foodResources = new Array<ResourceItem>();
-		for(int i = 0; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
-			foodResources.add(Utils.createResource(game, Constants.RESOURCE_FOOD));
+
+		resources = new Array<Array<ResourceItem>>();
+		resources.add(null);
+
+		for(int rType : Constants.RESOURCE_TYPES) {
+			resources.add(new Array<ResourceItem>());
+			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
+				resources.get(rType).add(Utils.createResource(game, rType));
 		}
-		oxygenResources = new Array<ResourceItem>();
-		for(int i = 0; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
-			oxygenResources.add(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
-		}
-		sanityResources = new Array<ResourceItem>();
-		for(int i = 0; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
-			sanityResources.add(Utils.createResource(game, Constants.RESOURCE_SANITY));
-		}
-		powerResources = new Array<ResourceItem>();
-		for(int i = 0; i < Constants.TOTAL_RESOURCE_POWER; i++) {
-			powerResources.add(Utils.createResource(game, Constants.RESOURCE_POWER));
-		}
+		
 		
 		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(200, 200));
 		for(int i = 0; i < 8; i++)
@@ -127,6 +121,19 @@ public class SpaceScreen implements Screen {
 		p.endPlanet = true;
 		planets.add(p);
 		
+		generators = new Array<ResourceGenerator>();
+		Sprite gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
+
+		gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
+		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
+		generators.add(sanityGenerator);
+
+		gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
+		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
+		generators.add(weaponsGenerator);
+
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 		
 		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
@@ -187,7 +194,7 @@ public class SpaceScreen implements Screen {
 //		}
 		world.step(1/60f, 6, 2);
 		
-		if(foodResources.size == 0 && oxygenResources.size == 0 && powerResources.size == 0 && sanityResources.size == 0)
+		if(resources.get(Constants.RESOURCE_OXYGEN).size == 0)
 			game.setScreen(new LoseScreen(game, this));
 	}
 		//debugRenderer.render(world, camera.combined);
@@ -236,45 +243,23 @@ public class SpaceScreen implements Screen {
 			sr.circle(testX, testY+3*testOffset, 36);
 			sr.setColor(Color.YELLOW);
 			sr.circle(testX, testY+(selectedResource-1)*testOffset, 36);
-			sr.setColor(Color.GREEN);
-			float arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
-			for (int i = 0; i < foodResources.size; i++) {
-				sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
-			}
-			sr.setColor(Color.BLUE);
-			arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
-			for (int i = 0; i < oxygenResources.size; i++) {
-				sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-			}
-			sr.setColor(Color.PINK);
-			arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
-			for (int i = 0; i < sanityResources.size; i++) {
-				sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-			}
-			sr.setColor(Color.RED);
-			arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
-			for (int i = 0; i < powerResources.size; i++) {
-				sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-			}
-			if (SHADOWED) {
-				sr.setColor(Color.GRAY);
-				arclength = 360 / Constants.TOTAL_RESOURCE_FOOD;
-				for (int i = foodResources.size; i < Constants.TOTAL_RESOURCE_FOOD; i++) {
-					sr.arc(testX,testY,34, 90 + (i * arclength), arclength - 5, 3);
+			int offset = 0;
+			for(int rType : Constants.RESOURCE_TYPES) {
+				int total = Constants.TOTAL_RESOURCE[rType];
+				float arclength = 360 / total;
+				for (int i = 0; i < total; i++) {
+					if(i < resources.get(rType).size) {
+						sr.setColor(Constants.RESOURCE_COLORS[rType]);
+					} else if(SHADOWED) {
+						sr.setColor(Color.GRAY);
+					} else
+						continue;
+					
+					sr.arc(testX,testY + offset,34, 90 + (i * arclength), arclength - 5, 3);					
 				}
-				arclength = 360 / Constants.TOTAL_RESOURCE_OXYGEN;
-				for (int i = oxygenResources.size; i < Constants.TOTAL_RESOURCE_OXYGEN; i++) {
-					sr.arc(testX,testY+testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-				}
-				arclength = 360 / Constants.TOTAL_RESOURCE_SANITY;
-				for (int i = sanityResources.size; i < Constants.TOTAL_RESOURCE_SANITY; i++) {
-					sr.arc(testX,testY+2*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-				}
-				arclength = 360 / Constants.TOTAL_RESOURCE_POWER;
-				for (int i = powerResources.size; i < Constants.TOTAL_RESOURCE_POWER; i++) {
-					sr.arc(testX,testY+3*testOffset,34, 90 + (i * arclength), arclength - 5, 3);
-				}
+				offset += 100;
 			}
+
 			sr.setColor(Color.WHITE);
 			sr.circle(testX, testY, 24);
 			sr.circle(testX, testY+testOffset, 24);
@@ -292,7 +277,14 @@ public class SpaceScreen implements Screen {
 		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_FOOD).get(0), testX, testY, 54, 54);
 		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0), testX-1, testY+testOffset+3, 54, 54);
 		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_SANITY).get(0), testX+3, testY+2*testOffset+6, 54, 54);
-		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_POWER).get(0), testX+4, testY+3*testOffset-2, 54, 54);
+		game.hudBatch.draw(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_WEAPONS).get(0), testX+4, testY+3*testOffset-2, 54, 54);
+		int yPos = 50;
+		for(ResourceGenerator r : generators) {
+			r.setSize(new Vector2(147, 147));
+			r.setPosition(new Vector2(Gdx.graphics.getWidth() - r.getSize().x - 50, yPos));
+			r.render();
+			yPos += 160;
+		}
 		game.hudBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.P))
