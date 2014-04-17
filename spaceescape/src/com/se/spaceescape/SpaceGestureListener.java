@@ -37,10 +37,10 @@ public class SpaceGestureListener implements GestureListener {
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
 			screen.selectedResource = Constants.RESOURCE_POWER;
 		} else {
-			if(x < Gdx.graphics.getWidth() / 2)
-				screen.spaceship.rotate(10);
-			else
-				screen.spaceship.rotate(-10);
+//			if(x < Gdx.graphics.getWidth() / 2)
+//				screen.spaceship.rotate(10);
+//			else
+//				screen.spaceship.rotate(-10);
 		}
 		return true;
 	}

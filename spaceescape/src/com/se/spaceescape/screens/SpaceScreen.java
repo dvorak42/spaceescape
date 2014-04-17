@@ -76,7 +76,7 @@ public class SpaceScreen implements Screen {
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.zoom = 0.1f*5;
+		camera.zoom = 1;//0.1f*5;
 		
 		sr = new ShapeRenderer();
 		
@@ -153,6 +153,19 @@ public class SpaceScreen implements Screen {
 			p.runOrbit();
 		}
 		
+		Vector2 v = spaceship.body.getLinearVelocity().cpy();
+		spaceship.body.applyForce(v.scl(-0.05f * v.len2()), spaceship.body.getWorldCenter(), true);
+
+		float a1 = (MathUtils.radDeg * spaceship.getRotation() + 360) % 360;
+		float a2 = (spaceship.targetAngle + 360) % 360;
+		float da = a2 - a1;
+		if(da > 180) da -= 360;
+		if(da < -180) da += 360;
+		if(da > 10 && spaceship.body.getAngularVelocity() < 0.1)
+			spaceship.rotate(10);
+		else if(da < -10 && spaceship.body.getAngularVelocity() > -0.1)
+			spaceship.rotate(-10);
+
 		//TODO: Code for attraction of items.
 //		Array<Body> bodies = new Array<Body>();
 //		world.getBodies(bodies);

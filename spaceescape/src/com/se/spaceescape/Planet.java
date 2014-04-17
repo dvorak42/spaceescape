@@ -63,6 +63,9 @@ public class Planet extends PhysicalEntity {
 				b.applyForce(dp.nor().scl(force), p1, true);
 			else
 				b.applyForce(dp.nor().scl(0.25f * force).rotate(115), p1, true);
+
+			Vector2 v = b.getLinearVelocity().cpy();
+			b.applyForce(v.scl(-0.05f * v.len2()), b.getWorldCenter(), true);
 		}
 	}
 	

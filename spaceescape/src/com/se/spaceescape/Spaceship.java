@@ -10,10 +10,12 @@ import com.se.spaceescape.screens.SpaceScreen;
 
 public class Spaceship extends PhysicalEntity {
 	SpaceScreen screen;
+	public float targetAngle;
 
 	public Spaceship(SpaceEscapeGame g, SpaceScreen screen, Sprite s) {
 		super(g, s);
 		this.screen = screen;
+		targetAngle = 0.0f;
 	}
 	
 	@Override
@@ -44,7 +46,8 @@ public class Spaceship extends PhysicalEntity {
 	public void toss(Vector2 dir, ResourceItem ri) {
 		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.8f);
 		Vector2 pos = body.getWorldCenter().cpy().add(offset);
-		
+		targetAngle = dir.angle() + 90;
+		System.out.println(targetAngle);
 		ri.initBody(world, pos);
 		
 		Vector2 force = offset.cpy().nor().scl(100000);
