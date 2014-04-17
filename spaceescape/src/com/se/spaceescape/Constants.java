@@ -31,19 +31,30 @@ public class Constants {
 			RESOURCE_IMGS.add(new ArrayList<Texture>());
 			RESOURCE_NAMES.add(new ArrayList<String>());
 		}
-		RESOURCE_IMGS.get(RESOURCE_FOOD).add(new Texture(Gdx.files.internal("art/bread.png")));
-		RESOURCE_NAMES.get(RESOURCE_FOOD).add("bread");
-		RESOURCE_GENERATOR_TEXTURES[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/food_icon.png"));
-		RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/food3.png")));
-		RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("food3");
-		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/food_icon.png"));
-		RESOURCE_IMGS.get(RESOURCE_SANITY).add(new Texture(Gdx.files.internal("art/food5.png")));
-		RESOURCE_NAMES.get(RESOURCE_SANITY).add("food5");
-		RESOURCE_GENERATOR_TEXTURES[RESOURCE_SANITY] = new Texture(Gdx.files.internal("art/food_icon.png"));
-		RESOURCE_IMGS.get(RESOURCE_WEAPONS).add(new Texture(Gdx.files.internal("art/food7.png")));
-		RESOURCE_NAMES.get(RESOURCE_WEAPONS).add("food7");
-		RESOURCE_GENERATOR_TEXTURES[RESOURCE_WEAPONS] = new Texture(Gdx.files.internal("art/food_icon.png"));
-		
+		RESOURCE_GENERATOR_TEXTURES[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/chef.png"));
+		for(int i = 1; i < 7; i++) {
+			RESOURCE_IMGS.get(RESOURCE_FOOD).add(new Texture(Gdx.files.internal("art/food" + i + ".png")));
+			RESOURCE_NAMES.get(RESOURCE_FOOD).add("food" + i);
+		}
+
+		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/chef.png"));
+		for(int i = 1; i < 7; i++) {
+			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/air" + i + ".png")));
+			RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("air" + i);
+		}
+
+		RESOURCE_GENERATOR_TEXTURES[RESOURCE_SANITY] = new Texture(Gdx.files.internal("art/gf.png"));
+		for(int i = 1; i < 7; i++) {
+			RESOURCE_IMGS.get(RESOURCE_SANITY).add(new Texture(Gdx.files.internal("art/love" + i + ".png")));
+			RESOURCE_NAMES.get(RESOURCE_SANITY).add("love" + i);
+		}
+
+		RESOURCE_GENERATOR_TEXTURES[RESOURCE_WEAPONS] = new Texture(Gdx.files.internal("art/gunner.png"));
+		for(int i = 1; i < 7; i++) {
+			RESOURCE_IMGS.get(RESOURCE_WEAPONS).add(new Texture(Gdx.files.internal("art/weapon" + i + ".png")));
+			RESOURCE_NAMES.get(RESOURCE_WEAPONS).add("weapon" + i);
+		}
+
 		for(ArrayList<Texture> tl : RESOURCE_IMGS) {
 			for(Texture t : tl) {
 				t.setFilter(TextureFilter.Linear, TextureFilter.Linear);
