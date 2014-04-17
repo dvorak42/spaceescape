@@ -63,6 +63,7 @@ public class Utils {
 	}
 	
 	public static void addItem(SpaceEscapeGame game, int type) {
+		Gdx.input.vibrate(200);
 		if(type <= Constants.NUM_RESOURCES && type > 0)
 			game.gameScreen.resources.get(type).add(Utils.createResource(game, type));
 	}

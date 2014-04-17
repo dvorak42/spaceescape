@@ -36,9 +36,6 @@ public class SpaceScreen implements Screen {
 	public SpaceEscapeGame game;
 
 	public OrthographicCamera camera;
-
-	Texture spaceshipTexture;
-	Texture backgroundTexture;
 	
 	public Spaceship spaceship;
 	
@@ -71,75 +68,6 @@ public class SpaceScreen implements Screen {
 		debugRenderer = new Box2DDebugRenderer();
 		
 		world.setContactListener(new SpaceContactListener());
-
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
-		
-		camera = new OrthographicCamera(w, h);
-		camera.zoom = 1;//0.1f*5;
-		
-		sr = new ShapeRenderer();
-		
-		spaceshipTexture = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
-		spaceshipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
-		backgroundTexture = new Texture(Gdx.files.internal("art/space.png"));
-		backgroundTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		
-		Sprite spaceshipSprite = new Sprite(spaceshipTexture);
-		spaceship = new Spaceship(g, this, spaceshipSprite);
-		spaceship.setSize(new Vector2(80, 80));
-		Utils.createBounds(world, 1000, 1000);
-		spaceship.initBody(world, new Vector2(500, 500));
-		entities = new Array<Entity>();
-		planets = new Array<Planet>();
-		toDestroy = new Array<ResourceItem>();
-
-		resources = new Array<Array<ResourceItem>>();
-		resources.add(null);
-
-		for(int rType : Constants.RESOURCE_TYPES) {
-			resources.add(new Array<ResourceItem>());
-			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
-				resources.get(rType).add(Utils.createResource(game, rType));
-		}
-		
-		
-		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(200, 200));
-		for(int i = 0; i < 8; i++)
-			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
-		planets.add(p);
-		entities.addAll(p.getOrbitters());
-
-		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
-		for(int i = 0; i < 8; i++)
-			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
-		planets.add(p);
-		entities.addAll(p.getOrbitters());
-
-		p = Utils.createPlanet(game, world, "goldplanet", 50, new Vector2(50, 800));
-		p.endPlanet = true;
-		planets.add(p);
-		
-		generators = new Array<ResourceGenerator>();
-		Sprite gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
-		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
-		generators.add(foodGenerator);
-
-		gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
-		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
-		generators.add(sanityGenerator);
-
-		gSprite = new Sprite(new Texture(Gdx.files.internal("art/food_icon.png")));
-		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
-		generators.add(weaponsGenerator);
-
-		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
-		
-		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
-		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
-		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
-		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
 	}
 	
 	public void runPhysics(float delta) {
@@ -206,14 +134,14 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.position.set(spaceship.body.getWorldCenter(), 0);
 		camera.update();
-		
-
-		game.backgroundBatch.begin();
-		int tilecount = 6;
-		game.backgroundBatch.draw(backgroundTexture, -spaceship.getPosition().x, -spaceship.getPosition().y,
-				backgroundTexture.getWidth() * tilecount, backgroundTexture.getHeight() * tilecount,
+		game.backgroundBatch.setProjectionMatrix(camera.combined);
+		game.hudBatch.begin();
+		int tilecount = 8;
+		Constants.SPACE_TEXTURE.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		game.hudBatch.draw(Constants.SPACE_TEXTURE,  - Gdx.graphics.getWidth(),  - Gdx.graphics.getHeight(),
+				Constants.SPACE_TEXTURE.getWidth() * tilecount, Constants.SPACE_TEXTURE.getHeight() * tilecount,
 				0, tilecount, tilecount, 0);
-		game.backgroundBatch.end();
+		game.hudBatch.end();
 
 		runPhysics(delta);
 
@@ -245,7 +173,7 @@ public class SpaceScreen implements Screen {
 			sr.circle(testX, testY+(selectedResource-1)*testOffset, 36);
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
-				int total = Constants.TOTAL_RESOURCE[rType];
+				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
 					if(i < resources.get(rType).size) {
@@ -301,8 +229,68 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
+		float w = Gdx.graphics.getWidth();
+		float h = Gdx.graphics.getHeight();
+		
+		camera = new OrthographicCamera(w, h);
+		camera.zoom = 0.1f*5;
+		
+		sr = new ShapeRenderer();
+		
+		Sprite spaceshipSprite = new Sprite(Constants.SPACESHIP_TEXTURE);
+		spaceship = new Spaceship(game, this, spaceshipSprite);
+		spaceship.setSize(new Vector2(80, 80));
+		//Utils.createBounds(world, 1000, 1000);
+		spaceship.initBody(world, new Vector2(500, 500));
+		entities = new Array<Entity>();
+		planets = new Array<Planet>();
+		toDestroy = new Array<ResourceItem>();
 
+		resources = new Array<Array<ResourceItem>>();
+		resources.add(null);
+
+		for(int rType : Constants.RESOURCE_TYPES) {
+			resources.add(new Array<ResourceItem>());
+			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
+				resources.get(rType).add(Utils.createResource(game, rType));
+		}
+		
+		
+		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(200, 200));
+		for(int i = 0; i < 8; i++)
+			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
+		planets.add(p);
+		entities.addAll(p.getOrbitters());
+
+		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
+		for(int i = 0; i < 8; i++)
+			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+		planets.add(p);
+		entities.addAll(p.getOrbitters());
+
+		p = Utils.createPlanet(game, world, "goldplanet", 50, new Vector2(50, 800));
+		p.endPlanet = true;
+		planets.add(p);
+		
+		generators = new Array<ResourceGenerator>();
+		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
+
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
+		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
+		generators.add(sanityGenerator);
+
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_WEAPONS]);
+		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
+		generators.add(weaponsGenerator);
+
+		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
+		
+		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
+		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
+		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
+		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
 	}
 
 	@Override
@@ -325,7 +313,6 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		spaceshipTexture.dispose();
 	}
 
 }
