@@ -34,7 +34,6 @@ public class ResourceGenerator extends Entity {
 		sprite.setColor(Color.GRAY);
 		sprite.draw(game.hudBatch);
 		sprite.setColor(Color.WHITE);
-		int w = (int)sprite.getWidth();
 		int h = (int)sprite.getHeight();
 		int w2 = sprite.getTexture().getWidth();
 		int h2 = sprite.getTexture().getHeight();

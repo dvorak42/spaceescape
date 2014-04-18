@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -125,11 +124,18 @@ public class SpaceScreen implements Screen {
 		camera.update();
 		game.backgroundBatch.setProjectionMatrix(camera.combined);
 		game.hudBatch.begin();
-		int tilecount = 8;
-		Constants.SPACE_TEXTURE.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		game.hudBatch.draw(Constants.SPACE_TEXTURE,  - Gdx.graphics.getWidth(),  - Gdx.graphics.getHeight(),
-				Constants.SPACE_TEXTURE.getWidth() * tilecount, Constants.SPACE_TEXTURE.getHeight() * tilecount,
-				0, tilecount, tilecount, 0);
+		float x = -spaceship.getPosition().x;
+		float y = -spaceship.getPosition().y;
+		while(x < -Gdx.graphics.getWidth())
+			x += Gdx.graphics.getWidth();
+		while(x > Gdx.graphics.getWidth())
+			x -= Gdx.graphics.getWidth();
+		while(y < -Gdx.graphics.getHeight())
+			y += Gdx.graphics.getHeight();
+		while(y > Gdx.graphics.getHeight())
+			y -= Gdx.graphics.getHeight();
+		game.hudBatch.draw(Constants.SPACE_TEXTURE, x, y, 2 * Gdx.graphics.getWidth(), 2 * Gdx.graphics.getHeight(),
+				0, 0, 4 * Constants.SPACE_TEXTURE.getWidth(), 4 * Constants.SPACE_TEXTURE.getHeight(), false, false);
 		game.hudBatch.end();
 
 		runPhysics(delta);
