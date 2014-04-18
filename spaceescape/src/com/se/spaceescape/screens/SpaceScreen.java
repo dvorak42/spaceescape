@@ -133,6 +133,60 @@ public class SpaceScreen implements Screen {
 		game.hudBatch.end();
 
 		runPhysics(delta);
+		
+		int midX = Gdx.graphics.getWidth() / 2;
+		int midY = Gdx.graphics.getHeight() / 2;
+		
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		ShapeRenderer sr = new ShapeRenderer();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(new Color(1, 0, 0, 0.25f));
+		sr.circle(midX, midY, 125);
+		sr.setColor(new Color(1, 0, 0, 0.75f));
+		
+		// Grab the two closest planets.
+		float[] closestPlanets  = {99999999f, 99999999f};
+		int[] closestPlanetsIdx = new int[2];
+		float planetDistance;
+		for (int i = 0; i < planets.size; i++) {
+			planetDistance = planets.get(i).getPosition().dst2(spaceship.getPosition());
+			if (planetDistance < 250000 && planets.get(i).fname != "goldplanet") {
+				if (planetDistance < closestPlanets[0]) {
+					closestPlanets[1] = closestPlanets[0];
+					closestPlanetsIdx[1] = closestPlanetsIdx[0];
+					closestPlanets[0] = planetDistance;
+					closestPlanetsIdx[0] = i;
+				} else if (planetDistance < closestPlanets[1]) {
+					closestPlanets[1] = planetDistance;
+					closestPlanetsIdx[1] = i;
+				}
+			}
+		}
+		// Draw the triangles
+		for (int i = 0; i < closestPlanets.length; i++) {
+			if (closestPlanets[i] < 250000) {
+				Vector2 direction = planets.get(closestPlanetsIdx[i])
+						.getPosition().sub(spaceship.getPosition()).nor();
+				Vector2 ang1 = direction.cpy().rotate(10);
+				Vector2 ang2 = direction.cpy().rotate(-10);			
+				sr.triangle(midX + 150 * direction.x,  midY + 150 * direction.y,
+						    midX + 120 * ang1.x,       midY + 120 * ang1.y,
+						    midX + 120 * ang2.x,       midY + 120 * ang2.y);
+			}
+		}
+		sr.setColor(Color.valueOf("FFD700CD"));
+		Vector2 direction = planets.peek()
+				.getPosition().sub(spaceship.getPosition()).nor();
+		Vector2 ang1 = direction.cpy().rotate(10);
+		Vector2 ang2 = direction.cpy().rotate(-10);			
+		sr.triangle(midX + 160 * direction.x,  midY + 160 * direction.y,
+				    midX + 110 * ang1.x,       midY + 110 * ang1.y,
+				    midX + 110 * ang2.x,       midY + 110 * ang2.y);
+
+		
+		sr.end();
+		Gdx.gl.glDisable(GL20.GL_BLEND);
 
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
@@ -143,7 +197,7 @@ public class SpaceScreen implements Screen {
 			r.render();
 		game.batch.end();
 		
-		ShapeRenderer sr = new ShapeRenderer();
+		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
 		int initX = 50;
 		int initY = 100;
