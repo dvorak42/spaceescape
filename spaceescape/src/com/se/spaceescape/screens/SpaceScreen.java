@@ -128,11 +128,11 @@ public class SpaceScreen implements Screen {
 		float y = -spaceship.getPosition().y;
 		while(x < -Gdx.graphics.getWidth())
 			x += Gdx.graphics.getWidth();
-		while(x > Gdx.graphics.getWidth())
+		while(x > 0)
 			x -= Gdx.graphics.getWidth();
 		while(y < -Gdx.graphics.getHeight())
 			y += Gdx.graphics.getHeight();
-		while(y > Gdx.graphics.getHeight())
+		while(y > 0)
 			y -= Gdx.graphics.getHeight();
 		game.hudBatch.draw(Constants.SPACE_TEXTURE, x, y, 2 * Gdx.graphics.getWidth(), 2 * Gdx.graphics.getHeight(),
 				0, 0, 4 * Constants.SPACE_TEXTURE.getWidth(), 4 * Constants.SPACE_TEXTURE.getHeight(), false, false);
