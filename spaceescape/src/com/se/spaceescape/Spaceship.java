@@ -53,6 +53,7 @@ public class Spaceship extends PhysicalEntity {
 		ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
 		screen.entities.add(ri);
+		screen.tossedResources.add(ri);
 	}
 
 	public void acquire(ResourceItem ri) {

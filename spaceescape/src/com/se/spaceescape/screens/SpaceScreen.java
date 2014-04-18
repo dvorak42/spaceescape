@@ -44,6 +44,7 @@ public class SpaceScreen implements Screen {
 
 	public Array<Array<ResourceItem>> resources;
 	public Array<Entity> entities;
+	public Array<ResourceItem> tossedResources;
 	public Array<Planet> planets;
 
 	public Array<ResourceItem> toDestroy;
@@ -68,12 +69,23 @@ public class SpaceScreen implements Screen {
 	
 	public void runPhysics(float delta) {
 		if(!paused) {
+			Vector2 shipPos = spaceship.body.getPosition();
+			for (ResourceItem ri : tossedResources) {
+				// The camera size / 3 seemed to work on desktop and tablet builds
+				// as a good indicator of "off the screen" but still giving some
+				// time before removing.
+				if (Math.abs(ri.body.getPosition().x - shipPos.x)*3 > camera.viewportWidth ||
+				    Math.abs(ri.body.getPosition().y - shipPos.y)*3 > camera.viewportHeight) {
+					toDestroy.add(ri);
+				}
+			}
 			while(toDestroy.size > 0) {
 				ResourceItem ri = toDestroy.pop();
 				world.destroyBody(ri.body);
 				ri.body.setUserData(null);
 				ri.body = null;
 				entities.removeValue(ri, true);
+				tossedResources.removeValue(ri, true);
 				for(Planet p : planets) {
 					p.getOrbitters().removeValue(ri, true);
 				}
@@ -218,6 +230,7 @@ public class SpaceScreen implements Screen {
 		//Utils.createBounds(world, 1000, 1000);
 		spaceship.initBody(world, new Vector2(500, 500));
 		entities = new Array<Entity>();
+		tossedResources = new Array<ResourceItem>();
 		planets = new Array<Planet>();
 		toDestroy = new Array<ResourceItem>();
 
