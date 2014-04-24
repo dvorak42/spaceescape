@@ -17,8 +17,10 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.se.spaceescape.AlertEntity;
+import com.se.spaceescape.AlienShip;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
+import com.se.spaceescape.PhysicalEntity;
 import com.se.spaceescape.Planet;
 import com.se.spaceescape.ResourceGenerator;
 import com.se.spaceescape.ResourceItem;
@@ -48,7 +50,7 @@ public class SpaceScreen implements Screen {
 	public Array<ResourceItem> tossedResources;
 	public Array<Planet> planets;
 
-	public Array<ResourceItem> toDestroy;
+	public Array<PhysicalEntity> toDestroy;
 	
 	// TEMP VARIABLES FOR CHOOSING UI
 	// TODO: REMOVE THIS AND CHOOSE
@@ -81,12 +83,14 @@ public class SpaceScreen implements Screen {
 				}
 			}
 			while(toDestroy.size > 0) {
-				ResourceItem ri = toDestroy.pop();
+				PhysicalEntity ri = toDestroy.pop();
 				world.destroyBody(ri.body);
 				ri.body.setUserData(null);
 				ri.body = null;
 				entities.removeValue(ri, true);
-				tossedResources.removeValue(ri, true);
+				if(ri instanceof ResourceItem) {
+					tossedResources.removeValue((ResourceItem)ri, true);
+				}
 				for(Planet p : planets) {
 					p.getOrbitters().removeValue(ri, true);
 				}
@@ -301,7 +305,7 @@ public class SpaceScreen implements Screen {
 		entities = new Array<Entity>();
 		tossedResources = new Array<ResourceItem>();
 		planets = new Array<Planet>();
-		toDestroy = new Array<ResourceItem>();
+		toDestroy = new Array<PhysicalEntity>();
 		hovering = new Array<AlertEntity>();
 		resources = new Array<Array<ResourceItem>>();
 		resources.add(null);
@@ -328,6 +332,10 @@ public class SpaceScreen implements Screen {
 		p = Utils.createPlanet(game, world, "goldplanet", 50, new Vector2(50, 800));
 		p.endPlanet = true;
 		planets.add(p);
+
+		AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE));
+		a.initBody(world, new Vector2(200, 700));
+		entities.add(a);
 		
 		generators = new Array<ResourceGenerator>();
 		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);

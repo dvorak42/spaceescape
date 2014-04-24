@@ -23,7 +23,13 @@ public class SpaceContactListener implements ContactListener {
 		} else if(b.getUserData() instanceof Spaceship && a.getUserData() instanceof Planet) {
 			((Planet)a.getUserData()).visited();
 		}
-	}
+
+		if(a.getUserData() instanceof ResourceItem && b.getUserData() instanceof AlienShip) {
+			((AlienShip)b.getUserData()).hit((ResourceItem)a.getUserData());
+		} else if(b.getUserData() instanceof ResourceItem && a.getUserData() instanceof AlienShip) {
+			((AlienShip)a.getUserData()).hit((ResourceItem)b.getUserData());
+		}
+}
 
 	@Override
 	public void endContact(Contact contact) {
