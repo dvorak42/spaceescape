@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class ResourceGenerator extends Entity {
 	float delay;
-	int type;
+	public int type;
 	
 	public ResourceGenerator(SpaceEscapeGame g, Sprite s, int type) {
 		super(g, s);
@@ -18,7 +18,7 @@ public class ResourceGenerator extends Entity {
 	public void tap() {
 		if(delay > 0)
 			return;
-		Utils.addItem(game, type);
+		Utils.addItem(game, type, getPosition());
 		delay = Constants.GENERATOR_DELAY;
 	}
 	

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Constants {
 
@@ -26,6 +27,7 @@ public class Constants {
 	public static final float GENERATOR_DELAY = 10.0f;
 	public static final Texture SPACESHIP_TEXTURE = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 	public static final Texture SPACE_TEXTURE = new Texture(Gdx.files.internal("art/space.png"));
+	public static final Sprite PLUS_SPRITE = new Sprite(new Texture(Gdx.files.internal("art/plus.png")));
 	static {
 		for(int i = 0; i < NUM_RESOURCES + 1; i++) {
 			RESOURCE_IMGS.add(new ArrayList<Texture>());

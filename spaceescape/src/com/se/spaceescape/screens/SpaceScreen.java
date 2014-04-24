@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.se.spaceescape.AlertEntity;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.Entity;
 import com.se.spaceescape.Planet;
@@ -43,6 +44,7 @@ public class SpaceScreen implements Screen {
 
 	public Array<Array<ResourceItem>> resources;
 	public Array<Entity> entities;
+	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
 	public Array<Planet> planets;
 
@@ -250,6 +252,13 @@ public class SpaceScreen implements Screen {
 			s.setPosition(initX, initY + offset);
 			s.setSize(48, 48);
 			s.draw(game.hudBatch);
+			for(AlertEntity a : hovering) {
+				if(a.type == rType) {
+					a.setPosition(new Vector2(s.getX() - 8, s.getY() + 8));
+					a.setSize(new Vector2(32, 32));
+					a.render();
+				}
+			}
 			offset += 100;
 		}
 
@@ -293,7 +302,7 @@ public class SpaceScreen implements Screen {
 		tossedResources = new Array<ResourceItem>();
 		planets = new Array<Planet>();
 		toDestroy = new Array<ResourceItem>();
-
+		hovering = new Array<AlertEntity>();
 		resources = new Array<Array<ResourceItem>>();
 		resources.add(null);
 
