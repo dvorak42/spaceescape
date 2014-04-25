@@ -17,10 +17,18 @@ public class Constants {
 	public static final int RESOURCE_WEAPONS  = 4;
 	public static final int NUM_RESOURCES = 4;
 	
+	public static final Color FOOD_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
+	public static final Color WEAPON_COLOR = new Color(136/255.f, 213/255.f, 211/255.f, 1.f);
+	public static final Color HEART_COLOR = new Color(227/255.f, 144/255.f, 123/255.f, 1.f);
+	
+	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
+	
 	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_OXYGEN, RESOURCE_SANITY, RESOURCE_WEAPONS};
-	public static final Color[] RESOURCE_COLORS = {Color.BLACK, Color.GREEN, Color.BLUE, Color.PINK, Color.RED};
+	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, Color.GREEN, HEART_COLOR, WEAPON_COLOR};
 	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 12};
 	public static final Texture[] RESOURCE_GENERATOR_TEXTURES = new Texture[NUM_RESOURCES + 1];
+	public static final Texture[] RESOURCE_ICONS = new Texture[NUM_RESOURCES + 1];
+	
 	
 	public static final ArrayList<ArrayList<Texture>> RESOURCE_IMGS = new ArrayList<ArrayList<Texture>>(NUM_RESOURCES);
 	public static final ArrayList<ArrayList<String>> RESOURCE_NAMES = new ArrayList<ArrayList<String>>(NUM_RESOURCES);
@@ -28,30 +36,36 @@ public class Constants {
 	public static final Texture SPACESHIP_TEXTURE = new Texture(Gdx.files.internal("art/spaceshuttle.png"));
 	public static final Texture SPACE_TEXTURE = new Texture(Gdx.files.internal("art/space.png"));
 	public static final Sprite PLUS_SPRITE = new Sprite(new Texture(Gdx.files.internal("art/plus.png")));
+	public static final Texture BUTTON_TEXTURE = new Texture(Gdx.files.internal("art/button.png"));
+	
 	static {
 		for(int i = 0; i < NUM_RESOURCES + 1; i++) {
 			RESOURCE_IMGS.add(new ArrayList<Texture>());
 			RESOURCE_NAMES.add(new ArrayList<String>());
 		}
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/chef.png"));
+		RESOURCE_ICONS[RESOURCE_FOOD] = new Texture(Gdx.files.internal("art/food.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_FOOD).add(new Texture(Gdx.files.internal("art/food" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_FOOD).add("food" + i);
 		}
 
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/chef.png"));
+		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/sentiment.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/air" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("air" + i);
 		}
 
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_SANITY] = new Texture(Gdx.files.internal("art/gf.png"));
+		RESOURCE_ICONS[RESOURCE_SANITY] = new Texture(Gdx.files.internal("art/sentiment.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_SANITY).add(new Texture(Gdx.files.internal("art/love" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_SANITY).add("love" + i);
 		}
 
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_WEAPONS] = new Texture(Gdx.files.internal("art/gunner.png"));
+		RESOURCE_ICONS[RESOURCE_WEAPONS] = new Texture(Gdx.files.internal("art/weapons.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_WEAPONS).add(new Texture(Gdx.files.internal("art/weapon" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_WEAPONS).add("weapon" + i);

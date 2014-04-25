@@ -245,13 +245,13 @@ public class SpaceScreen implements Screen {
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 28;
-		initY = 75;
+		initX = 26;
+		initY = 76;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(rType).get(0));
 			if(resources.get(rType).size > 0) {
-				s = new Sprite(resources.get(rType).get(resources.get(rType).size - 1).sprite.getTexture());
+				s = new Sprite(Constants.RESOURCE_ICONS[rType]);
 			}
 			s.setPosition(initX, initY + offset);
 			s.setSize(48, 48);
