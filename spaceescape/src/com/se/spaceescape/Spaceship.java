@@ -1,21 +1,28 @@
 package com.se.spaceescape;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 import com.se.spaceescape.screens.SpaceScreen;
 
 public class Spaceship extends PhysicalEntity {
 	SpaceScreen screen;
 	public float targetAngle;
+	
+	float stealing;
+	int stealType;
 
 	public Spaceship(SpaceEscapeGame g, SpaceScreen screen, Sprite s) {
 		super(g, s);
 		this.screen = screen;
 		targetAngle = 0.0f;
+		stealType = -1;
 	}
 	
 	@Override
@@ -41,6 +48,33 @@ public class Spaceship extends PhysicalEntity {
 	
 	public void rotate(float dr) {
 		body.applyAngularImpulse(1000 * dr, true);
+	}
+	
+	@Override
+	public void render() {
+		stealing -= Gdx.graphics.getDeltaTime();
+		
+		if(stealType >= 0) {
+			if(stealing < 0) {
+				Array<ResourceItem> r = game.gameScreen.resources.get(stealType);
+				if(r != null && r.size > 0) {
+					r.pop();
+				}
+				stealType = -1;
+				game.gameScreen.stealingResource = -1;
+			}
+			if(stealing % 0.3 < 0.15)
+				game.gameScreen.stealingResource = stealType;
+			else
+				game.gameScreen.stealingResource = 0;
+		}
+		
+		super.render();
+	}
+	
+	public void steal() {
+		stealing = 1.0f;
+		stealType = MathUtils.random(1, Constants.NUM_RESOURCES - 1);
 	}
 	
 	public void toss(Vector2 dir, ResourceItem ri) {

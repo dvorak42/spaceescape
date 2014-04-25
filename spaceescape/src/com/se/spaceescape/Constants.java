@@ -10,6 +10,12 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Constants {
+	public static final float ATTACK_DELAY = 3.0f;
+	public static final float ATTACK_PROB = 0.8f;
+	public static final int ATTACK_SIZE = 3;
+	public static final float STEAL_DELAY = 3.0f;
+	public static final float STEAL_PROB = 0.8f;
+	public static final float DESTROY_PROB = 0.1f;
 
 	public static final int RESOURCE_FOOD   = 1;
 	public static final int RESOURCE_OXYGEN = 2;

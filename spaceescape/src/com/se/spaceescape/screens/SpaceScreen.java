@@ -1,5 +1,7 @@
 package com.se.spaceescape.screens;
 
+import sun.net.www.http.Hurryable;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -49,7 +51,8 @@ public class SpaceScreen implements Screen {
 	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
 	public Array<Planet> planets;
-
+	public Array<AlienShip> enemies;
+	
 	public Array<PhysicalEntity> toDestroy;
 	
 	// TEMP VARIABLES FOR CHOOSING UI
@@ -60,6 +63,10 @@ public class SpaceScreen implements Screen {
 	ShapeRenderer sr;
 	
 	public Array<ResourceGenerator> generators;
+	
+	float timeToAttack;
+	
+	public int stealingResource = -1;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -91,6 +98,9 @@ public class SpaceScreen implements Screen {
 				if(ri instanceof ResourceItem) {
 					tossedResources.removeValue((ResourceItem)ri, true);
 				}
+				if(ri instanceof AlienShip) {
+					enemies.removeValue((AlienShip) ri, true);
+				}
 				for(Planet p : planets) {
 					p.getOrbitters().removeValue(ri, true);
 				}
@@ -120,6 +130,18 @@ public class SpaceScreen implements Screen {
 				game.setScreen(new LoseScreen(game, this));
 		}
 		//debugRenderer.render(world, camera.combined);
+	}
+	
+	public void attackPlayer() {
+		float angle = MathUtils.random(360);
+
+		for(int i = enemies.size; i < Constants.ATTACK_SIZE; i++) {
+			AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE));
+			a.setSize(new Vector2(64, 64));
+			a.initBody(world, spaceship.getPosition().cpy().add(new Vector2(0, 500).rotate(angle + 120 * i)));
+			entities.add(a);
+			enemies.add(a);
+		}
 	}
 
 	@Override
@@ -200,6 +222,15 @@ public class SpaceScreen implements Screen {
 		sr.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 
+		
+		timeToAttack -= Gdx.graphics.getDeltaTime();
+		if(timeToAttack < 0) {
+			if(MathUtils.random() < Constants.ATTACK_PROB)
+				attackPlayer();
+			timeToAttack = Constants.ATTACK_DELAY;
+		}
+		
+		
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
 		spaceship.render();
@@ -210,13 +241,26 @@ public class SpaceScreen implements Screen {
 		game.batch.end();
 		
 		sr = new ShapeRenderer();
+		sr.setProjectionMatrix(camera.combined);
+		sr.begin(ShapeType.Line);
+		sr.setColor(Color.BLACK);
+
+		for(AlienShip a : enemies) {
+			if(a.stealFunnel)
+				sr.line(a.body.getWorldCenter().x, a.body.getWorldCenter().y, spaceship.body.getWorldCenter().x, spaceship.body.getWorldCenter().y);
+		}
+		sr.end();
+		
+		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
 		int initX = 50;
 		int initY = 100;
 		if (SEGMENTED_UI) {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
-				if(rType == selectedResource)
+				if(rType == stealingResource)
+					sr.setColor(Color.RED);
+				else if(rType == selectedResource)
 					sr.setColor(Color.YELLOW);
 				else
 					sr.setColor(Color.WHITE);
@@ -256,13 +300,6 @@ public class SpaceScreen implements Screen {
 			s.setPosition(initX, initY + offset);
 			s.setSize(48, 48);
 			s.draw(game.hudBatch);
-			for(AlertEntity a : hovering) {
-				if(a.type == rType) {
-					a.setPosition(new Vector2(s.getX() - 8, s.getY() + 8));
-					a.setSize(new Vector2(32, 32));
-					a.render();
-				}
-			}
 			offset += 100;
 		}
 
@@ -271,6 +308,13 @@ public class SpaceScreen implements Screen {
 			r.setSize(new Vector2(147, 147));
 			r.setPosition(new Vector2(Gdx.graphics.getWidth() - r.getSize().x - 50, yPos));
 			r.render();
+			for(AlertEntity a : hovering) {
+				if(a.type == r.type) {
+					a.setPosition(new Vector2(r.getPosition().x + 16, r.getPosition().y + 32));
+					a.setSize(new Vector2(64, 64));
+					a.render();
+				}
+			}
 			yPos += 160;
 		}
 		game.hudBatch.end();
@@ -333,9 +377,7 @@ public class SpaceScreen implements Screen {
 		p.endPlanet = true;
 		planets.add(p);
 
-		AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE));
-		a.initBody(world, new Vector2(200, 700));
-		entities.add(a);
+		enemies = new Array<AlienShip>();
 		
 		generators = new Array<ResourceGenerator>();
 		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
@@ -350,6 +392,8 @@ public class SpaceScreen implements Screen {
 		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
 		generators.add(weaponsGenerator);
 
+		timeToAttack = Constants.ATTACK_DELAY;
+		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
 		
 		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
