@@ -16,7 +16,7 @@ public class ResourceGenerator extends Entity {
 	}
 	
 	public void tap() {
-		if(delay > 0)
+		if(delay > 0 || !active)
 			return;
 		Utils.addItem(game, type, getPosition());
 		delay = Constants.GENERATOR_DELAY;
@@ -29,6 +29,10 @@ public class ResourceGenerator extends Entity {
 		
 		if(active) {
 			elapsedTime += Gdx.graphics.getDeltaTime();
+		} else {
+			sprite.setColor(Color.RED);
+			sprite.draw(game.hudBatch);
+			return;
 		}
 		
 		sprite.setColor(Color.GRAY);

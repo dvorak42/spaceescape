@@ -65,7 +65,7 @@ public class Utils {
 	public static void addItem(SpaceEscapeGame game, int type, Vector2 origin) {
 		Gdx.input.vibrate(200);
 		ResourceItem ri = Utils.createResource(game, type);
-		game.gameScreen.hovering.add(new AlertEntity(game, ri.sprite, type));
+		game.gameScreen.hovering.add(new AlertEntity(game, new Sprite(ri.sprite.getTexture()), type));
 		if(type <= Constants.NUM_RESOURCES && type > 0)
 			game.gameScreen.resources.get(type).add(ri);
 	}

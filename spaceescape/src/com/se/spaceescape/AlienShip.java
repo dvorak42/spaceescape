@@ -1,7 +1,10 @@
 package com.se.spaceescape;
 
+import sun.security.util.Resources;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -13,12 +16,15 @@ public class AlienShip extends PhysicalEntity {
 	SpaceScreen screen;
 	public int health;
 	float blinkTime;
-
+	float stealTime;
+	public boolean stealFunnel = false;
+	
 	public AlienShip(SpaceEscapeGame g, SpaceScreen screen, Sprite s) {
 		super(g, s);
 		this.screen = screen;
 		health = 100;
 		blinkTime = 0;
+		stealTime = 0;
 	}
 	
 	@Override
@@ -39,6 +45,7 @@ public class AlienShip extends PhysicalEntity {
 	    modelOrigin = Utils.mainBodies.getOrigin("spaceshuttle", sprite.getWidth());
 	    
 	    body.setUserData(this);
+	    body.setLinearDamping(1);
 		body.setAngularDamping(0.2f);
 	}
 	
@@ -51,6 +58,36 @@ public class AlienShip extends PhysicalEntity {
 		blinkTime -= Gdx.graphics.getDeltaTime();
 		if((blinkTime > 0 && blinkTime % 0.3 < 0.15) || blinkTime <= 0)
 			super.render();
+		
+		Vector2 pPos = game.gameScreen.spaceship.body.getWorldCenter();
+		
+		if(pPos.dst(body.getWorldCenter()) < 150)
+			body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(-10000), body.getWorldCenter(), true);
+		if(pPos.dst(body.getWorldCenter()) > 200)
+			body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
+		
+		if(pPos.dst(body.getWorldCenter()) < 200) {
+			stealTime -= Gdx.graphics.getDeltaTime();
+			if(stealTime < Constants.STEAL_DELAY / 2)
+				stealFunnel = true;
+			else
+				stealFunnel = false;
+			if(stealTime < 0) {
+				boolean steal = false;
+				for(int i = game.gameScreen.resources.get(Constants.RESOURCE_WEAPONS).size - 1; i < Constants.TOTAL_RESOURCE[Constants.RESOURCE_WEAPONS]; i++)
+					steal = steal || (MathUtils.random() < Constants.STEAL_PROB);
+
+				if(steal) {
+					game.gameScreen.spaceship.steal();
+					if(MathUtils.random() < Constants.DESTROY_PROB) {
+						ResourceGenerator rg = game.gameScreen.generators.get(MathUtils.random(game.gameScreen.generators.size - 1));
+						rg.setActive(false);
+					}
+				}
+				stealTime = Constants.STEAL_DELAY;
+			}
+		} else 
+			stealFunnel = false;
 	}
 	
 	public void hit(ResourceItem ri) {
