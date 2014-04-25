@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Constants {
+	public static int ATTACK_MODE = 2; //1 = Hover, 2 = Lock
+	public static final float ATTACK_START_DIST = 500;
+	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 3.0f;
 	public static final float ATTACK_PROB = 0.8f;
 	public static final int ATTACK_SIZE = 3;

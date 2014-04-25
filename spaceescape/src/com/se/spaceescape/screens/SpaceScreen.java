@@ -1,7 +1,5 @@
 package com.se.spaceescape.screens;
 
-import sun.net.www.http.Hurryable;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -146,9 +144,9 @@ public class SpaceScreen implements Screen {
 		float angle = MathUtils.random(360);
 
 		for(int i = enemies.size; i < Constants.ATTACK_SIZE; i++) {
-			AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE));
+			AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE), new Vector2(0, Constants.ATTACK_DIST).rotate(angle + 120 * i));
 			a.setSize(new Vector2(64, 64));
-			a.initBody(world, spaceship.getPosition().cpy().add(new Vector2(0, 500).rotate(angle + 120 * i)));
+			a.initBody(world, spaceship.getPosition().cpy().add(new Vector2(0, Constants.ATTACK_START_DIST).rotate(angle + 120 * i)));
 			entities.add(a);
 			enemies.add(a);
 		}
@@ -175,7 +173,11 @@ public class SpaceScreen implements Screen {
 		game.hudBatch.draw(Constants.SPACE_TEXTURE, x, y, 2 * Gdx.graphics.getWidth(), 2 * Gdx.graphics.getHeight(),
 				0, 0, 4 * Constants.SPACE_TEXTURE.getWidth(), 4 * Constants.SPACE_TEXTURE.getHeight(), false, false);
 		game.hudBatch.end();
-
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.NUM_1))
+			Constants.ATTACK_MODE = 1;
+		else if(Gdx.input.isKeyPressed(Input.Keys.NUM_2))
+			Constants.ATTACK_MODE = 2;
 		runPhysics(delta);
 		
 		int midX = Gdx.graphics.getWidth() / 2;
