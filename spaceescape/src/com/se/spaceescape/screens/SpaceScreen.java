@@ -184,6 +184,11 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		ShapeRenderer sr = new ShapeRenderer();
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.valueOf("551A8BCD"));
+		for (Vector2 pos : clouds)
+			sr.circle(pos.x, pos.y, 125);
+		sr.end();
 		sr.begin(ShapeType.Line);
 		Gdx.gl.glLineWidth(20);
 		sr.setColor(Color.valueOf("00853A"));
@@ -212,7 +217,8 @@ public class SpaceScreen implements Screen {
 		sr.begin(ShapeType.Filled);
 		Gdx.gl.glLineWidth(1);
 		sr.setColor(Color.valueOf("FFD700"));
-		for (int i = 0; i < closestPlanets.length; i++) {
+		int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
+		for (int i = 0; i < navCount; i++) {
 			if (closestPlanets[i] < 700000) {
 				Vector2 direction = planets.get(closestPlanetsIdx[i])
 						.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
