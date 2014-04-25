@@ -175,7 +175,7 @@ public class SpaceScreen implements Screen {
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		ShapeRenderer sr = new ShapeRenderer();
 		sr.begin(ShapeType.Line);
-		Gdx.gl.glLineWidth(10);
+		Gdx.gl.glLineWidth(20);
 		sr.setColor(Color.valueOf("00853A"));
 		sr.circle(midX, midY, 125, 100);
 		sr.end();
@@ -186,7 +186,7 @@ public class SpaceScreen implements Screen {
 		float planetDistance;
 		for (int i = 0; i < planets.size; i++) {
 			planetDistance = planets.get(i).body.getWorldCenter().dst2(spaceship.body.getWorldCenter());
-			if (planetDistance < 500000 && planets.get(i).fname != "goldplanet") {
+			if (planetDistance < 700000 && planets.get(i).fname != "goldplanet") {
 				if (planetDistance < closestPlanets[0]) {
 					closestPlanets[1] = closestPlanets[0];
 					closestPlanetsIdx[1] = closestPlanetsIdx[0];
@@ -203,7 +203,7 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glLineWidth(1);
 		sr.setColor(Color.valueOf("FFD700"));
 		for (int i = 0; i < closestPlanets.length; i++) {
-			if (closestPlanets[i] < 500000) {
+			if (closestPlanets[i] < 700000) {
 				Vector2 direction = planets.get(closestPlanetsIdx[i])
 						.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 				Vector2 ang1 = direction.cpy().rotate(10);
@@ -345,7 +345,7 @@ public class SpaceScreen implements Screen {
 		spaceship = new Spaceship(game, this, spaceshipSprite);
 		spaceship.setSize(new Vector2(80, 80));
 		//Utils.createBounds(world, 1000, 1000);
-		spaceship.initBody(world, new Vector2(500, 500));
+		spaceship.initBody(world, new Vector2(0, 0));
 		entities = new Array<Entity>();
 		tossedResources = new Array<ResourceItem>();
 		planets = new Array<Planet>();
@@ -359,21 +359,94 @@ public class SpaceScreen implements Screen {
 			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
 				resources.get(rType).add(Utils.createResource(game, rType));
 		}
+		resources.add(new Array<ResourceItem>());
+		for(int i = 0; i < Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]; i++)
+			resources.get(Constants.RESOURCE_OXYGEN).add(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
 		
+		// Random map generation values for testing.
+		// A bunch of EOL comments just for completeness. They can be removed.
+		int MIN_DIST_GOAL = 1000; // Minimum distance from start -> goal.
+		int MAX_DIST_GOAL = 3000; // Maximum distance from start -> goal.
+		int MIN_START_DIST = 500; // Minimum distance from start to the closest planet.
+		int MAX_START_DIST = 700; // Maximum distance from start to the closest planet.
+		int MAX_PLANET_DIST = 2000; // Maximum distance from start to a planet.
+		int MIN_PLANETS = 4; // The minimum number of planets.
+		int MAX_PLANETS = 8; // The maximum number of planets.
+		int MIN_OXYGEN_CLOUDS; // The minimum number of oxygen clouds.
+		int MAX_OXYGEN_CLOUDS; // The maximum number of oxygen clouds.
+		int MIN_SEPARATION_PLANETS = 250000; // The minimum squared distance between planets.
+		int MAX_SEPARATION_PLANETS; // The maximum distance between planets.
+		int MIN_SEPARATION_CLOUDS; // The minimum distance between oxygen clouds.
+		int MAX_SEPARATION_CLOUDS; // The maximum distance between oxygen clouds.
+		int MIN_PLANET_SIZE = 50;
+		int MAX_PLANET_SIZE = 150;
 		
-		Planet p = Utils.createPlanet(game, world, "planet1", 150, new Vector2(200, 200));
+		// Weird way of doing it. Randomization like this never feels right, but considering we don't
+		// know exactly what types of layouts are enjoyable.
+		// It just chooses random spots that fit the restrictions above. 
+		int numberOfPlanets = 1;
+		int totalPlanets = (int) (MIN_PLANETS + Math.random() * (MAX_PLANETS - MIN_PLANETS));
+		Vector2[] planetLocations = new Vector2[MAX_PLANETS];
+		int placementDist = (int) (MIN_START_DIST + Math.random() * (MAX_START_DIST - MIN_START_DIST));
+		double placementAngle = 2*Math.PI*Math.random();
+		Vector2 randomPos = new Vector2((int) (placementDist*Math.cos(placementAngle)), (int) (placementDist*Math.sin(placementAngle)));
+		
+		// Place the regular food planets.
+		planetLocations[0] = randomPos;
+		Planet p = Utils.createPlanet(game, world, "planet1", (int) (MIN_PLANET_SIZE + Math.round(Math.random()*(MAX_PLANET_SIZE-MIN_PLANET_SIZE))), randomPos);
 		for(int i = 0; i < 8; i++)
 			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
 		planets.add(p);
 		entities.addAll(p.getOrbitters());
+		System.out.println("Number of Planets: " + totalPlanets);
+		int placementX, placementY;
+		newPlanet: while (numberOfPlanets < totalPlanets) {
+			placementX = (int) ((2*Math.random() - 1) * MAX_PLANET_DIST);
+			placementY = (int) ((2*Math.random() - 1) * MAX_PLANET_DIST);
+			randomPos = new Vector2(placementX, placementY);
+			// Make sure the planet is far from start.
+			if (randomPos.dst2(spaceship.getPosition()) < MAX_START_DIST*MAX_START_DIST)
+				continue;
+			// And far enough from other planets.
+			for (int i = 0; i < numberOfPlanets; i++) {
+				if (randomPos.dst2(planetLocations[i]) < MIN_SEPARATION_PLANETS) {
+					continue newPlanet;
+				}
+			}
+			p = Utils.createPlanet(game, world, Math.random() < 0.5 ? "planet1" : "planet2", (int) (MIN_PLANET_SIZE + Math.round(Math.random()*(MAX_PLANET_SIZE-MIN_PLANET_SIZE))), randomPos);
+			for(int i = 0; i < 8; i++)
+				p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
+			planets.add(p);
+			entities.addAll(p.getOrbitters());
+			
+			System.out.println("  Planet[" + numberOfPlanets + "]: " + placementX + ", " + placementY);
+			planetLocations[numberOfPlanets] = randomPos;
+			numberOfPlanets++;
+		}
 
-		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
-		for(int i = 0; i < 8; i++)
-			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
-		planets.add(p);
-		entities.addAll(p.getOrbitters());
 
-		p = Utils.createPlanet(game, world, "goldplanet", 50, new Vector2(50, 800));
+//		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
+//		for(int i = 0; i < 8; i++)
+//			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+//		planets.add(p);
+//		entities.addAll(p.getOrbitters());
+		
+		// Place the end planet.
+		goldPlanet: while (true) {
+			placementDist = (int) (MIN_DIST_GOAL + Math.random() * (MAX_DIST_GOAL - MIN_DIST_GOAL));
+			placementAngle = 2*Math.PI*Math.random();
+			randomPos = new Vector2((int) (placementDist*Math.cos(placementAngle)), (int) (placementDist*Math.sin(placementAngle)));
+
+			for (int i = 0; i < numberOfPlanets; i++) {
+				if (randomPos.dst2(planetLocations[i]) < MIN_SEPARATION_PLANETS) {
+					continue goldPlanet;
+				}
+			}
+			break;
+		}
+		System.out.println("Gold Planet: " + randomPos.x + ", " + randomPos.y);
+		
+		p = Utils.createPlanet(game, world, "goldplanet", 50, randomPos);
 		p.endPlanet = true;
 		planets.add(p);
 
