@@ -55,6 +55,7 @@ public class SpaceScreen implements Screen {
 	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
 	public Array<Planet> planets;
+	public Array<Vector2> clouds;
 	public Array<AlienShip> enemies;
 	
 	public Array<PhysicalEntity> toDestroy;
@@ -241,6 +242,13 @@ public class SpaceScreen implements Screen {
 			timeToAttack = Constants.ATTACK_DELAY;
 		}
 		
+		sr = new ShapeRenderer();
+		sr.setProjectionMatrix(camera.combined);
+		sr.begin(ShapeType.Filled);
+		sr.setColor(Color.valueOf("551A8BCD"));
+		for (Vector2 pos : clouds)
+			sr.circle(pos.x, pos.y, 125);
+		sr.end();
 		
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
@@ -252,7 +260,6 @@ public class SpaceScreen implements Screen {
 		game.batch.end();
 		
 		sr = new ShapeRenderer();
-		sr.setProjectionMatrix(camera.combined);
 		sr.begin(ShapeType.Line);
 		sr.setColor(Color.BLACK);
 
@@ -262,7 +269,6 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 		
-		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
 		int initX = 50;
 		int initY = 100;
@@ -374,6 +380,7 @@ public class SpaceScreen implements Screen {
 		entities = new Array<Entity>();
 		tossedResources = new Array<ResourceItem>();
 		planets = new Array<Planet>();
+		clouds  = new Array<Vector2>();
 		toDestroy = new Array<PhysicalEntity>();
 		hovering = new Array<AlertEntity>();
 		resources = new Array<Array<ResourceItem>>();
@@ -393,16 +400,17 @@ public class SpaceScreen implements Screen {
 		int MIN_START_DIST = 500; // Minimum distance from start to the closest planet.
 		int MAX_START_DIST = 700; // Maximum distance from start to the closest planet.
 		int MAX_PLANET_DIST = 2000; // Maximum distance from start to a planet.
+		int MAX_CLOUD_DIST = 2500; // Maximum distance from start to a cloud.
 		int MIN_PLANETS = 4; // The minimum number of planets.
 		int MAX_PLANETS = 8; // The maximum number of planets.
-		int MIN_OXYGEN_CLOUDS; // The minimum number of oxygen clouds.
-		int MAX_OXYGEN_CLOUDS; // The maximum number of oxygen clouds.
+		int MIN_OXYGEN_CLOUDS = 1; // The minimum number of oxygen clouds.
+		int MAX_OXYGEN_CLOUDS = 4; // The maximum number of oxygen clouds.
 		int MIN_SEPARATION_PLANETS = 250000; // The minimum squared distance between planets.
 		int MAX_SEPARATION_PLANETS; // The maximum distance between planets.
-		int MIN_SEPARATION_CLOUDS; // The minimum distance between oxygen clouds.
+		int MIN_SEPARATION_CLOUDS = 500000; // The minimum distance between oxygen clouds.
 		int MAX_SEPARATION_CLOUDS; // The maximum distance between oxygen clouds.
 		int MIN_PLANET_SIZE = 50;
-		int MAX_PLANET_SIZE = 150;
+		int MAX_PLANET_SIZE = 125;
 		
 		// Weird way of doing it. Randomization like this never feels right, but considering we don't
 		// know exactly what types of layouts are enjoyable.
@@ -447,12 +455,36 @@ public class SpaceScreen implements Screen {
 			numberOfPlanets++;
 		}
 
-
-//		p = Utils.createPlanet(game, world, "planet2", 100, new Vector2(700, 700));
-//		for(int i = 0; i < 8; i++)
-//			p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
-//		planets.add(p);
-//		entities.addAll(p.getOrbitters());
+		int numberOfClouds = 0;
+		int totalClouds = (int) (MIN_OXYGEN_CLOUDS + Math.random() * (MAX_OXYGEN_CLOUDS - MIN_OXYGEN_CLOUDS));
+		Vector2[] cloudLocations = new Vector2[MAX_OXYGEN_CLOUDS];
+		System.out.println("Number of Clouds: " + totalClouds);
+		ResourceItem cloudFood = null;
+		newCloud: while (numberOfClouds < totalClouds) {
+			placementX = (int) ((2*Math.random() - 1) * MAX_CLOUD_DIST);
+			placementY = (int) ((2*Math.random() - 1) * MAX_CLOUD_DIST);
+			randomPos = new Vector2(placementX, placementY);
+			// Make sure the cloud is far from start.
+			if (randomPos.dst2(spaceship.getPosition()) < MAX_START_DIST*MAX_START_DIST)
+				continue;
+			// And far enough from other clouds.
+			for (int i = 0; i < numberOfClouds; i++) {
+				if (randomPos.dst2(cloudLocations[i]) < MIN_SEPARATION_CLOUDS) {
+					continue newCloud;
+				}
+			}
+			for(int i = 0; i < 4; i++) {
+				cloudFood = Utils.createResource(game, Constants.RESOURCE_OXYGEN);
+				cloudFood.initBody(world, randomPos.cpy().add(new Vector2(100, 0).rotate(MathUtils.random(360f))));
+				entities.add(cloudFood);
+			}
+			
+			System.out.println("  Cloud[" + numberOfClouds + "]: " + placementX + ", " + placementY);
+			cloudLocations[numberOfClouds] = randomPos;
+			clouds.add(randomPos);
+			numberOfClouds++;
+		}
+		
 		
 		// Place the end planet.
 		goldPlanet: while (true) {
