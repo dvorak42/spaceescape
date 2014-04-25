@@ -39,5 +39,6 @@ public class ResourceItem extends PhysicalEntity {
 	    body.setAngularDamping(2.0f);
 	    body.createFixture(fd);
 		body.setUserData(this);
+		sprite.setSize(40, 40);
 	}
 }
