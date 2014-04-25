@@ -84,7 +84,8 @@ public class Spaceship extends PhysicalEntity {
 		ri.initBody(world, pos);
 		
 		Vector2 force = offset.cpy().nor().scl(100000);
-		ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
+		//ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
+		ri.body.applyForce(force, ri.body.getWorldCenter(), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
 		screen.entities.add(ri);
 		screen.tossedResources.add(ri);
