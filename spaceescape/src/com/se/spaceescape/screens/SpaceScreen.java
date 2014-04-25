@@ -293,10 +293,8 @@ public class SpaceScreen implements Screen {
 		initY = 76;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
-			Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(rType).get(0));
-			if(resources.get(rType).size > 0) {
-				s = new Sprite(Constants.RESOURCE_ICONS[rType]);
-			}
+			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
+			
 			s.setPosition(initX, initY + offset);
 			s.setSize(48, 48);
 			s.draw(game.hudBatch);
