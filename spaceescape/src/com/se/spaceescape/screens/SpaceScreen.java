@@ -42,11 +42,15 @@ public class SpaceScreen implements Screen {
 	public boolean paused = false;
 	
 	World world;
+	float worldTime = 0;
+	float MAX_TIME_LIMIT = 60f;
+	float stepTime = MAX_TIME_LIMIT / 200f;
 	Box2DDebugRenderer debugRenderer;
 	
 	public int selectedResource = Constants.RESOURCE_FOOD;
 
 	public Array<Array<ResourceItem>> resources;
+	public int oxygenRemaining;
 	public Array<Entity> entities;
 	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
@@ -125,8 +129,13 @@ public class SpaceScreen implements Screen {
 				spaceship.rotate(-10);
 
 			world.step(1/60f, 6, 2);
+			worldTime += 1/60f;
+		    if (worldTime >= stepTime) {
+		    	oxygenRemaining--;
+		        worldTime -= stepTime;
+		    }
 		
-			if(resources.get(Constants.RESOURCE_OXYGEN).size == 0)
+			if(oxygenRemaining <= 0)
 				game.setScreen(new LoseScreen(game, this));
 		}
 		//debugRenderer.render(world, camera.combined);
@@ -286,6 +295,16 @@ public class SpaceScreen implements Screen {
 				sr.circle(initX, initY + offset, 24);
 				offset += 100;
 			}
+			initX += 16;
+			initY += 12;
+			sr.setColor(Color.WHITE);
+			sr.circle(initX, initY + offset, 60);
+			sr.setColor(Constants.RESOURCE_COLORS[Constants.RESOURCE_OXYGEN]);
+			sr.arc(initX, initY + offset,
+					58, 90,
+					360f * ((float)oxygenRemaining / (float)Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]));
+			sr.setColor(Color.WHITE);
+			sr.circle(initX, initY + offset, 30);
 		}
 		sr.end();
 		
@@ -302,6 +321,12 @@ public class SpaceScreen implements Screen {
 			s.draw(game.hudBatch);
 			offset += 100;
 		}
+		initX += 16;
+		initY += 12;
+		Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0));
+		s.setPosition(initX , initY + offset);
+		s.setSize(48, 48);
+		s.draw(game.hudBatch);
 
 		int yPos = 50;
 		for(ResourceGenerator r : generators) {
@@ -359,9 +384,7 @@ public class SpaceScreen implements Screen {
 			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
 				resources.get(rType).add(Utils.createResource(game, rType));
 		}
-		resources.add(new Array<ResourceItem>());
-		for(int i = 0; i < Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]; i++)
-			resources.get(Constants.RESOURCE_OXYGEN).add(Utils.createResource(game, Constants.RESOURCE_OXYGEN));
+		oxygenRemaining = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
 		
 		// Random map generation values for testing.
 		// A bunch of EOL comments just for completeness. They can be removed.

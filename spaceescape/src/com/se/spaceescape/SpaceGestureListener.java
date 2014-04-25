@@ -30,11 +30,11 @@ public class SpaceGestureListener implements GestureListener {
 		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 1296) {
 			screen.selectedResource = Constants.RESOURCE_FOOD;
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 1296) {
-			screen.selectedResource = Constants.RESOURCE_OXYGEN;
+			screen.selectedResource = Constants.RESOURCE_WEAPONS;
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 1296) {
 			screen.selectedResource = Constants.RESOURCE_SANITY;
-		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
-			screen.selectedResource = Constants.RESOURCE_WEAPONS;
+//		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
+//			screen.selectedResource = Constants.RESOURCE_OXYGEN;
 		} else {
 			for(ResourceGenerator rg : screen.generators) {
 				Vector2 p1 = rg.getPosition();
