@@ -94,7 +94,7 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
-		// TODO Auto-generated method stub
+		screen.camera.zoom = 0.1f*5 + 0.002f*(initialDistance - distance);
 		return false;
 	}
 
