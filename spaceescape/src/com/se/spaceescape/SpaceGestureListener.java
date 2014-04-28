@@ -10,9 +10,9 @@ public class SpaceGestureListener implements GestureListener {
 	SpaceScreen screen;
 	Vector2 lastPress;
 	
-	int testX = 50;
+	int testX = 70;
 	int testY = 100;
-	int testOffset = 100;
+	int testOffset = 150;
 	
 	public SpaceGestureListener(SpaceScreen s) {
 		screen = s;

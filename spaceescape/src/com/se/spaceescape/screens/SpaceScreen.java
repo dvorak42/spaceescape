@@ -278,7 +278,7 @@ public class SpaceScreen implements Screen {
 		sr.end();
 		
 		sr.begin(ShapeType.Filled);
-		int initX = 50;
+		int initX = 70;
 		int initY = 100;
 		if (SEGMENTED_UI) {
 			int offset = 0;
@@ -289,7 +289,7 @@ public class SpaceScreen implements Screen {
 					sr.setColor(Color.YELLOW);
 				else
 					sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 36);
+				sr.circle(initX, initY + offset, 60);
 				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
@@ -300,17 +300,15 @@ public class SpaceScreen implements Screen {
 					} else
 						continue;
 					
-					sr.arc(initX,initY + offset, 34, 90 + (i * arclength), arclength - 5, 3);					
+					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
 				}
 				if(rType == selectedResource)
 					sr.setColor(Color.YELLOW);
 				else
 					sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 24);
-				offset += 100;
+				sr.circle(initX, initY + offset, 30);
+				offset += 150;
 			}
-			initX += 16;
-			initY += 12;
 			sr.setColor(Color.WHITE);
 			sr.circle(initX, initY + offset, 60);
 			sr.setColor(Constants.RESOURCE_COLORS[Constants.RESOURCE_OXYGEN]);
@@ -324,7 +322,7 @@ public class SpaceScreen implements Screen {
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 26;
+		initX = 46;
 		initY = 76;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
@@ -333,10 +331,8 @@ public class SpaceScreen implements Screen {
 			s.setPosition(initX, initY + offset);
 			s.setSize(48, 48);
 			s.draw(game.hudBatch);
-			offset += 100;
+			offset += 150;
 		}
-		initX += 16;
-		initY += 12;
 		Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0));
 		s.setPosition(initX , initY + offset);
 		s.setSize(48, 48);
