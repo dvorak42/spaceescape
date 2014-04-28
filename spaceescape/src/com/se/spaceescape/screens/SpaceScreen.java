@@ -277,6 +277,8 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 		
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		sr.begin(ShapeType.Filled);
 		int initX = 70;
 		int initY = 100;
@@ -285,8 +287,6 @@ public class SpaceScreen implements Screen {
 			for(int rType : Constants.RESOURCE_TYPES) {
 				if(rType == stealingResource)
 					sr.setColor(Color.RED);
-				else if(rType == selectedResource)
-					sr.setColor(Color.YELLOW);
 				else
 					sr.setColor(Color.WHITE);
 				sr.circle(initX, initY + offset, 60);
@@ -302,11 +302,15 @@ public class SpaceScreen implements Screen {
 					
 					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
 				}
-				if(rType == selectedResource)
-					sr.setColor(Color.YELLOW);
+				if(rType == stealingResource)
+					sr.setColor(Color.RED);
 				else
 					sr.setColor(Color.WHITE);
 				sr.circle(initX, initY + offset, 30);
+				if(rType == selectedResource) {
+					sr.setColor(Color.valueOf("FFFF0050"));
+					sr.circle(initX, initY + offset, 64);
+				}
 				offset += 150;
 			}
 			sr.setColor(Color.WHITE);
