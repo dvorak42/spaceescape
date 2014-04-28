@@ -276,19 +276,14 @@ public class SpaceScreen implements Screen {
 				sr.line(a.body.getWorldCenter().x, a.body.getWorldCenter().y, spaceship.body.getWorldCenter().x, spaceship.body.getWorldCenter().y);
 		}
 		sr.end();
-		
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
 		sr.begin(ShapeType.Filled);
 		int initX = 70;
 		int initY = 100;
 		if (SEGMENTED_UI) {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
-				if(rType == stealingResource)
-					sr.setColor(Color.RED);
-				else
-					sr.setColor(Color.WHITE);
+				sr.setColor(Color.WHITE);
 				sr.circle(initX, initY + offset, 60);
 				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
@@ -302,15 +297,8 @@ public class SpaceScreen implements Screen {
 					
 					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
 				}
-				if(rType == stealingResource)
-					sr.setColor(Color.RED);
-				else
-					sr.setColor(Color.WHITE);
+				sr.setColor(Color.WHITE);
 				sr.circle(initX, initY + offset, 40);
-				if(rType == selectedResource) {
-					sr.setColor(Color.valueOf("FFFF0050"));
-					sr.circle(initX, initY + offset, 64);
-				}
 				offset += 150;
 			}
 			sr.setColor(Color.WHITE);
@@ -357,6 +345,26 @@ public class SpaceScreen implements Screen {
 			yPos += 160;
 		}
 		game.hudBatch.end();
+		
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		sr.begin(ShapeType.Filled);
+		initX = 70;
+		initY = 100;
+		offset = 0;
+		for(int rType : Constants.RESOURCE_TYPES) {
+			if(rType == selectedResource) {
+				sr.setColor(Color.valueOf("00FF0070"));
+				sr.circle(initX, initY + offset, 68);
+			}
+			if(rType == stealingResource) {
+				sr.setColor(Color.valueOf("FF0000B0"));
+				sr.circle(initX, initY + offset, 60);
+			}
+			offset += 150;
+		}
+		sr.end();
+
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.P))
 			game.setScreen(game.pauseScreen);
