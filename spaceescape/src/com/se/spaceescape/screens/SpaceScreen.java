@@ -277,19 +277,19 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 		
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		sr.begin(ShapeType.Filled);
-		int initX = 50;
+		int initX = 70;
 		int initY = 100;
 		if (SEGMENTED_UI) {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
 				if(rType == stealingResource)
 					sr.setColor(Color.RED);
-				else if(rType == selectedResource)
-					sr.setColor(Color.YELLOW);
 				else
 					sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 36);
+				sr.circle(initX, initY + offset, 60);
 				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
@@ -300,17 +300,19 @@ public class SpaceScreen implements Screen {
 					} else
 						continue;
 					
-					sr.arc(initX,initY + offset, 34, 90 + (i * arclength), arclength - 5, 3);					
+					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
 				}
-				if(rType == selectedResource)
-					sr.setColor(Color.YELLOW);
+				if(rType == stealingResource)
+					sr.setColor(Color.RED);
 				else
 					sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 24);
-				offset += 100;
+				sr.circle(initX, initY + offset, 40);
+				if(rType == selectedResource) {
+					sr.setColor(Color.valueOf("FFFF0050"));
+					sr.circle(initX, initY + offset, 64);
+				}
+				offset += 150;
 			}
-			initX += 16;
-			initY += 12;
 			sr.setColor(Color.WHITE);
 			sr.circle(initX, initY + offset, 60);
 			sr.setColor(Constants.RESOURCE_COLORS[Constants.RESOURCE_OXYGEN]);
@@ -318,25 +320,23 @@ public class SpaceScreen implements Screen {
 					58, 90,
 					360f * ((float)oxygenRemaining / (float)Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]));
 			sr.setColor(Color.WHITE);
-			sr.circle(initX, initY + offset, 30);
+			sr.circle(initX, initY + offset, 40);
 		}
 		sr.end();
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 26;
-		initY = 76;
+		initX = 34;
+		initY = 64;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
 			
 			s.setPosition(initX, initY + offset);
-			s.setSize(48, 48);
+			s.setSize(72, 72);
 			s.draw(game.hudBatch);
-			offset += 100;
+			offset += 150;
 		}
-		initX += 16;
-		initY += 12;
 		Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0));
 		s.setPosition(initX , initY + offset);
 		s.setSize(48, 48);
