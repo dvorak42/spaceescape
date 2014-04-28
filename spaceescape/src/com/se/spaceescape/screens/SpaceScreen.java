@@ -306,7 +306,7 @@ public class SpaceScreen implements Screen {
 					sr.setColor(Color.RED);
 				else
 					sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 30);
+				sr.circle(initX, initY + offset, 40);
 				if(rType == selectedResource) {
 					sr.setColor(Color.valueOf("FFFF0050"));
 					sr.circle(initX, initY + offset, 64);
@@ -320,20 +320,20 @@ public class SpaceScreen implements Screen {
 					58, 90,
 					360f * ((float)oxygenRemaining / (float)Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]));
 			sr.setColor(Color.WHITE);
-			sr.circle(initX, initY + offset, 30);
+			sr.circle(initX, initY + offset, 40);
 		}
 		sr.end();
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 46;
-		initY = 76;
+		initX = 34;
+		initY = 64;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
 			
 			s.setPosition(initX, initY + offset);
-			s.setSize(48, 48);
+			s.setSize(72, 72);
 			s.draw(game.hudBatch);
 			offset += 150;
 		}
