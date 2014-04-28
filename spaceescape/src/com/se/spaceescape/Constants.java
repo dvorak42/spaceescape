@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Constants {
+	public static int ATTACK_MODE = 2; //1 = Hover, 2 = Lock
+	public static final float ATTACK_START_DIST = 500;
+	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 3.0f;
 	public static final float ATTACK_PROB = 0.8f;
 	public static final int ATTACK_SIZE = 3;
@@ -18,9 +21,9 @@ public class Constants {
 	public static final float DESTROY_PROB = 0.1f;
 
 	public static final int RESOURCE_FOOD   = 1;
-	public static final int RESOURCE_OXYGEN = 2;
+	public static final int RESOURCE_WEAPONS = 2;
 	public static final int RESOURCE_SANITY = 3;
-	public static final int RESOURCE_WEAPONS  = 4;
+	public static final int RESOURCE_OXYGEN = 4;
 	public static final int NUM_RESOURCES = 4;
 	
 	public static final Color FOOD_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
@@ -29,9 +32,9 @@ public class Constants {
 	
 	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
 	
-	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_OXYGEN, RESOURCE_SANITY, RESOURCE_WEAPONS};
-	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, Color.GREEN, HEART_COLOR, WEAPON_COLOR};
-	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 12};
+	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_WEAPONS, RESOURCE_SANITY}; // Treat OXYGEN as a separate resource.
+	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, WEAPON_COLOR, HEART_COLOR, Color.GREEN};
+	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 200};
 	public static final Texture[] RESOURCE_GENERATOR_TEXTURES = new Texture[NUM_RESOURCES + 1];
 	public static final Texture[] RESOURCE_ICONS = new Texture[NUM_RESOURCES + 1];
 	

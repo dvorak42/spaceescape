@@ -1,7 +1,5 @@
 package com.se.spaceescape;
 
-import sun.security.util.Resources;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,13 +16,15 @@ public class AlienShip extends PhysicalEntity {
 	float blinkTime;
 	float stealTime;
 	public boolean stealFunnel = false;
+	Vector2 offset;
 	
-	public AlienShip(SpaceEscapeGame g, SpaceScreen screen, Sprite s) {
+	public AlienShip(SpaceEscapeGame g, SpaceScreen screen, Sprite s, Vector2 os) {
 		super(g, s);
 		this.screen = screen;
 		health = 100;
 		blinkTime = 0;
 		stealTime = 0;
+		offset = os;
 	}
 	
 	@Override
@@ -59,14 +59,23 @@ public class AlienShip extends PhysicalEntity {
 		if((blinkTime > 0 && blinkTime % 0.3 < 0.15) || blinkTime <= 0)
 			super.render();
 		
-		Vector2 pPos = game.gameScreen.spaceship.body.getWorldCenter();
+		if(Constants.ATTACK_MODE == 1) {
+			Vector2 pPos = game.gameScreen.spaceship.body.getWorldCenter();
+			
+			if(pPos.dst(body.getWorldCenter()) < Constants.ATTACK_DIST)
+				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(-10000), body.getWorldCenter(), true);
+			if(pPos.dst(body.getWorldCenter()) > Constants.ATTACK_DIST * 1.3)
+				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
+			
+		} else if(Constants.ATTACK_MODE == 2) {
+			Vector2 pPos = game.gameScreen.spaceship.body.getWorldCenter().add(offset);
+			
+			if(pPos.dst(body.getWorldCenter()) > 10)
+				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
+		}
 		
-		if(pPos.dst(body.getWorldCenter()) < 150)
-			body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(-10000), body.getWorldCenter(), true);
-		if(pPos.dst(body.getWorldCenter()) > 200)
-			body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
 		
-		if(pPos.dst(body.getWorldCenter()) < 200) {
+		if(game.gameScreen.spaceship.body.getWorldCenter().dst(body.getWorldCenter()) < Constants.ATTACK_DIST * 1.3) {
 			stealTime -= Gdx.graphics.getDeltaTime();
 			if(stealTime < Constants.STEAL_DELAY / 2)
 				stealFunnel = true;
