@@ -27,6 +27,19 @@ public class SpaceGestureListener implements GestureListener {
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
 		y = Gdx.graphics.getHeight() - y;
+		
+		if (Math.pow(x - (screen.zoomButton.getX() + screen.zoomButton.getWidth() / 2), 2) + 
+				Math.pow(y - (screen.zoomButton.getY() + screen.zoomButton.getHeight() / 2), 2) < Math.pow(screen.zoomButton.getWidth() / 2, 2)) {
+			if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
+				screen.camera.zoom = Constants.DEFAULT_ZOOM;
+			else
+				screen.camera.zoom = Constants.MAX_ZOOM;
+			screen.camera.update();
+		}
+		
+		if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
+			return false;
+		
 		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 1296) {
 			screen.selectedResource = Constants.RESOURCE_FOOD;
 		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 1296) {
@@ -59,6 +72,9 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean fling(float velocityX, float velocityY, int button) {
+		if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
+			return false;
+
 		Vector2 worldPress = Utils.worldSpace(lastPress, screen.spaceship.body.getWorldCenter(), screen.camera.zoom / 1.5f);
 		boolean hit = false;
 		for(Fixture f : screen.spaceship.body.getFixtureList()) {

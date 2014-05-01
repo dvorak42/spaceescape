@@ -47,7 +47,7 @@ public class Utils {
 		int variety = MathUtils.random(rTextures.size() - 1);
 		Sprite sprite = new Sprite(rTextures.get(variety));
 		ResourceItem ri = new ResourceItem(g, sprite, rType, Constants.RESOURCE_NAMES.get(rType).get(variety));
-		ri.setSize(new Vector2(16, 16));
+		ri.setSize(new Vector2(60, 60));
 		return ri;
 	}
 	
@@ -68,7 +68,7 @@ public class Utils {
 		game.gameScreen.hovering.add(new AlertEntity(game, new Sprite(ri.sprite.getTexture()), type));
 		if (type == Constants.RESOURCE_OXYGEN) {
 			game.gameScreen.oxygenRemaining += 25;
-		} else if (type <= Constants.NUM_RESOURCES && type > 0)
+		} else if (type <= Constants.NUM_RESOURCES && type > 0 && game.gameScreen.resources.get(type).size < Constants.TOTAL_RESOURCE[type])
 			game.gameScreen.resources.get(type).add(ri);
 	}
 }

@@ -103,7 +103,7 @@ public class AlienShip extends PhysicalEntity {
 		if(screen.toDestroy.contains(ri, true))
 			return;
 		screen.toDestroy.add(ri);
-		if(ri.type == Constants.RESOURCE_WEAPONS) {
+		if(ri.type <= Constants.NUM_RESOURCES) {
 			health -= 50;
 			blinkTime = 2;
 			if(health <= 0) {
