@@ -269,8 +269,13 @@ public class SpaceScreen implements Screen {
 		spaceship.render();
 		for(Entity r : entities)
 			r.render();
-		for(Entity r : planets)
-			r.render();
+		for(Entity r : planets) {
+			Planet p = (Planet)r;
+			if(p.endPlanet && camera.zoom > Constants.DEFAULT_ZOOM)
+				p.renderEnd();
+			else
+				r.render();
+		}
 		game.batch.end();
 		
 		sr = new ShapeRenderer();
