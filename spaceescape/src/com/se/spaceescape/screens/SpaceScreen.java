@@ -226,6 +226,8 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glLineWidth(1);
 		sr.setColor(Color.valueOf("FFD700"));
 		int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
+		if (navCount > closestPlanets.length)
+			navCount = closestPlanets.length;
 		for (int i = 0; i < navCount; i++) {
 			if (closestPlanets[i] < 700000) {
 				Vector2 direction = planets.get(closestPlanetsIdx[i])
