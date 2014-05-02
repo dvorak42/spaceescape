@@ -13,13 +13,17 @@ public class Constants {
 	public static int ATTACK_MODE = 2; //1 = Hover, 2 = Lock
 	public static final float ATTACK_START_DIST = 500;
 	public static final float ATTACK_DIST = 150;
-	public static final float ATTACK_DELAY = 3.0f;
+	public static final float ATTACK_DELAY = 30.0f;
 	public static final float ATTACK_PROB = 0.8f;
 	public static final int ATTACK_SIZE = 3;
 	public static final float STEAL_DELAY = 3.0f;
 	public static final float STEAL_PROB = 0.8f;
 	public static final float DESTROY_PROB = 0.1f;
 
+	public static final float DEFAULT_ZOOM = 0.5f;
+	public static final float MAX_ZOOM = 10.0f;
+	
+	
 	public static final int RESOURCE_FOOD   = 1;
 	public static final int RESOURCE_WEAPONS = 2;
 	public static final int RESOURCE_SANITY = 3;

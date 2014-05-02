@@ -1,5 +1,7 @@
 package com.se.spaceescape;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -50,6 +52,18 @@ public class Planet extends PhysicalEntity {
 	public void addOrbitter(ResourceItem ri) {
 		ri.initBody(world, body.getWorldCenter().cpy().add(new Vector2(altitude, 0).rotate(MathUtils.random(360f))));
 		orbitters.add(ri);
+	}
+	
+	public void renderEnd() {
+		Vector2 spritePos = body.getPosition().sub(modelOrigin);
+		Sprite s = new Sprite(new Texture(Gdx.files.internal("art/goal.png")));
+		s.setPosition(spritePos.x, spritePos.y);
+		s.setOrigin(modelOrigin.x, modelOrigin.y);
+		s.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 3;
+		s.setSize(s.getWidth() * scl, s.getHeight() * scl);
+		s.draw(game.batch);
+		super.render();
 	}
 	
 	public void runOrbit() {

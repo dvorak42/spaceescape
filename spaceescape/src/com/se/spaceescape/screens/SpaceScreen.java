@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -70,6 +71,8 @@ public class SpaceScreen implements Screen {
 	float timeToAttack;
 	
 	public int stealingResource = -1;
+	
+	public Sprite zoomButton;
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -137,13 +140,14 @@ public class SpaceScreen implements Screen {
 			if(oxygenRemaining <= 0)
 				game.setScreen(new LoseScreen(game, this));
 		}
-		//debugRenderer.render(world, camera.combined);
 	}
 	
 	public void attackPlayer() {
+		if(enemies.size > 0)
+			return;
 		float angle = MathUtils.random(360);
 
-		for(int i = enemies.size; i < Constants.ATTACK_SIZE; i++) {
+		for(int i = 0; i < Constants.ATTACK_SIZE; i++) {
 			AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE), new Vector2(0, Constants.ATTACK_DIST).rotate(angle + 120 * i));
 			a.setSize(new Vector2(64, 64));
 			a.initBody(world, spaceship.getPosition().cpy().add(new Vector2(0, Constants.ATTACK_START_DIST).rotate(angle + 120 * i)));
@@ -182,19 +186,20 @@ public class SpaceScreen implements Screen {
 		
 		int midX = Gdx.graphics.getWidth() / 2;
 		int midY = Gdx.graphics.getHeight() / 2;
-		
+		float scl = Constants.DEFAULT_ZOOM / camera.zoom;
+
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		ShapeRenderer sr = new ShapeRenderer();
 		sr.begin(ShapeType.Filled);
 		sr.setColor(Color.valueOf("551A8BCD"));
 		for (Vector2 pos : clouds)
-			sr.circle(pos.x, pos.y, 125);
+			sr.circle(pos.x * scl, pos.y * scl, 125 * scl);
 		sr.end();
 		sr.begin(ShapeType.Line);
-		Gdx.gl.glLineWidth(20);
+		Gdx.gl.glLineWidth(20 * scl);
 		sr.setColor(Color.valueOf("00853A"));
-		sr.circle(midX, midY, 125, 100);
+		sr.circle(midX, midY, 125 * scl, 100);
 		sr.end();
 		
 		// Grab the two closest planets.
@@ -216,6 +221,7 @@ public class SpaceScreen implements Screen {
 			}
 		}
 		// Draw the triangles
+		
 		sr.begin(ShapeType.Filled);
 		Gdx.gl.glLineWidth(1);
 		sr.setColor(Color.valueOf("FFD700"));
@@ -225,10 +231,10 @@ public class SpaceScreen implements Screen {
 				Vector2 direction = planets.get(closestPlanetsIdx[i])
 						.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 				Vector2 ang1 = direction.cpy().rotate(10);
-				Vector2 ang2 = direction.cpy().rotate(-10);			
-				sr.triangle(midX + 150 * direction.x,  midY + 150 * direction.y,
-						    midX + 120 * ang1.x,       midY + 120 * ang1.y,
-						    midX + 120 * ang2.x,       midY + 120 * ang2.y);
+				Vector2 ang2 = direction.cpy().rotate(-10);
+				sr.triangle(midX + 150 * direction.x * scl,  midY + 150 * direction.y * scl,
+						    midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
+						    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
 			}
 		}
 		sr.setColor(Color.valueOf("a8ff00"));
@@ -236,9 +242,9 @@ public class SpaceScreen implements Screen {
 				.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 		Vector2 ang1 = direction.cpy().rotate(10);
 		Vector2 ang2 = direction.cpy().rotate(-10);			
-		sr.triangle(midX + 170 * direction.x,  midY + 170 * direction.y,
-				    midX + 120 * ang1.x,       midY + 120 * ang1.y,
-				    midX + 120 * ang2.x,       midY + 120 * ang2.y);
+		sr.triangle(midX + 170 * direction.x * scl,  midY + 170 * direction.y * scl,
+				    midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
+				    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
 		sr.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -263,8 +269,13 @@ public class SpaceScreen implements Screen {
 		spaceship.render();
 		for(Entity r : entities)
 			r.render();
-		for(Entity r : planets)
-			r.render();
+		for(Entity r : planets) {
+			Planet p = (Planet)r;
+			if(p.endPlanet && camera.zoom > Constants.DEFAULT_ZOOM)
+				p.renderEnd();
+			else
+				r.render();
+		}
 		game.batch.end();
 		
 		sr = new ShapeRenderer();
@@ -344,6 +355,8 @@ public class SpaceScreen implements Screen {
 			}
 			yPos += 160;
 		}
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -365,7 +378,8 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 
-		
+		debugRenderer.render(world, camera.combined);
+
 		if(Gdx.input.isKeyPressed(Input.Keys.P))
 			game.setScreen(game.pauseScreen);
 	}
@@ -384,7 +398,7 @@ public class SpaceScreen implements Screen {
 		float h = Gdx.graphics.getHeight();
 		
 		camera = new OrthographicCamera(w, h);
-		camera.zoom = 0.1f*5;
+		camera.zoom = Constants.DEFAULT_ZOOM;
 		
 		sr = new ShapeRenderer();
 		
@@ -521,6 +535,9 @@ public class SpaceScreen implements Screen {
 		p.endPlanet = true;
 		planets.add(p);
 
+		zoomButton = new Sprite(new Texture(Gdx.files.internal("art/button.png")));
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		
 		enemies = new Array<AlienShip>();
 		
 		generators = new Array<ResourceGenerator>();

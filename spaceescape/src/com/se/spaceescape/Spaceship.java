@@ -37,7 +37,7 @@ public class Spaceship extends PhysicalEntity {
 
 		FixtureDef fd = new FixtureDef();
 	    fd.density = 0.1f;
-	    fd.friction = 0.5f;
+	    fd.friction = 0.2f;
 	    fd.restitution = 0.3f;
 	    Utils.mainBodies.attachFixture(body, "spaceshuttle", fd, sprite.getWidth());
 	    modelOrigin = Utils.mainBodies.getOrigin("spaceshuttle", sprite.getWidth());
@@ -53,6 +53,11 @@ public class Spaceship extends PhysicalEntity {
 	@Override
 	public void render() {
 		stealing -= Gdx.graphics.getDeltaTime();
+		
+		if(game.gameScreen.enemies.size > 0) {
+			body.setLinearVelocity(Vector2.Zero);
+			body.setAngularVelocity(0);
+		}
 		
 		if(stealType >= 0) {
 			if(stealing < 0) {
@@ -78,15 +83,15 @@ public class Spaceship extends PhysicalEntity {
 	}
 	
 	public void toss(Vector2 dir, ResourceItem ri) {
-		Vector2 offset = dir.nor().cpy().scl(sprite.getWidth() * 0.8f);
+		Vector2 offset = dir.nor().cpy().scl(sprite.getHeight() * 0.2f + ri.sprite.getHeight() * 1.5f);
 		Vector2 pos = body.getWorldCenter().cpy().add(offset);
 		targetAngle = dir.angle() + 90;
 		ri.initBody(world, pos);
 		
-		Vector2 force = offset.cpy().nor().scl(100000);
+		Vector2 force = offset.cpy().nor().scl(10000000);
 		//ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		ri.body.applyForce(force, ri.body.getWorldCenter(), true);
-		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy().sub(offset.cpy().scl(3f)), true);
+		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy(), true);
 		screen.entities.add(ri);
 		screen.tossedResources.add(ri);
 	}

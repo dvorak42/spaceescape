@@ -52,7 +52,6 @@ public class PhysicalEntity extends Entity {
 	@Override
 	public void render() {
 		Vector2 spritePos = body.getPosition().sub(modelOrigin);
-		
 		sprite.setPosition(spritePos.x, spritePos.y);
 		sprite.setOrigin(modelOrigin.x, modelOrigin.y);
 		sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
