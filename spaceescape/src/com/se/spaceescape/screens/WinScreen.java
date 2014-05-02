@@ -3,6 +3,7 @@ package com.se.spaceescape.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.se.spaceescape.SpaceEscapeGame;
@@ -10,6 +11,7 @@ import com.se.spaceescape.SpaceEscapeGame;
 public class WinScreen implements Screen {
 	SpaceEscapeGame game;
 	SpaceScreen parent;
+	public Sound winGameAudio = Gdx.audio.newSound(Gdx.files.internal("music/wingame.mp3"));
 	
 	public WinScreen(SpaceEscapeGame g, SpaceScreen parent) {
 		game = g;
@@ -42,8 +44,7 @@ public class WinScreen implements Screen {
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
-
+		winGameAudio.play();
 	}
 
 	@Override
@@ -66,8 +67,7 @@ public class WinScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		winGameAudio.dispose();
 	}
 
 }

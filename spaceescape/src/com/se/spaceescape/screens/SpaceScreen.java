@@ -3,6 +3,8 @@ package com.se.spaceescape.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
@@ -74,6 +76,15 @@ public class SpaceScreen implements Screen {
 	public int stealingResource = -1;
 	
 	public Sprite zoomButton;
+	
+	// Sounds
+	public Sound suctionAudio = Gdx.audio.newSound(Gdx.files.internal("music/suction.wav"));
+	public Sound popAudio = Gdx.audio.newSound(Gdx.files.internal("music/pop.mp3"));
+	public Sound itemGetAudio = Gdx.audio.newSound(Gdx.files.internal("music/itemget.wav"));
+	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
+	
+	// Music
+	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -568,6 +579,8 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
 		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
 		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
+		
+		bgmusicAudio.play();
 	}
 
 	@Override
@@ -590,6 +603,11 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		suctionAudio.dispose();
+		popAudio.dispose();
+		itemGetAudio.dispose();
+		explosionAudio.dispose();
+		bgmusicAudio.dispose();
 	}
 
 }
