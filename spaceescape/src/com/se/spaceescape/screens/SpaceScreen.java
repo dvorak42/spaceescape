@@ -354,12 +354,14 @@ public class SpaceScreen implements Screen {
 			}
 			sr.setColor(Color.DARK_GRAY);
 			sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
+			sr.setColor(Color.valueOf("ac2b1b80"));
 			float percentO2Remaining = ((float)oxygenRemaining / maximumOxygenSteps);
-			if (percentO2Remaining*MAX_TIME_LIMIT > 15f || (int) (percentO2Remaining*100) % 3 != 0) {
-				sr.setColor(Color.valueOf("ac2b1b"));
-				sr.rect(midX - 250, Gdx.graphics.getHeight() - 70,
-						500f * percentO2Remaining, 50);
+			if (percentO2Remaining*MAX_TIME_LIMIT < 15f && (int) (percentO2Remaining*200) % 2 == 0) {
+				sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
 			}
+			sr.setColor(Color.valueOf("ac2b1b"));
+			sr.rect(midX - 250, Gdx.graphics.getHeight() - 70,
+					500f * percentO2Remaining, 50);
 		}
 		sr.end();
 		
