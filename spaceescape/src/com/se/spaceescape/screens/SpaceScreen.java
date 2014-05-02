@@ -203,11 +203,15 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		ShapeRenderer sr = new ShapeRenderer();
+		sr.setProjectionMatrix(camera.combined);
 		sr.begin(ShapeType.Filled);
 		sr.setColor(Color.valueOf("551A8BCD"));
 		for (Vector2 pos : clouds)
-			sr.circle(pos.x * scl, pos.y * scl, 125 * scl);
+			sr.circle(pos.x, pos.y, 125);
 		sr.end();
+
+		
+		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Line);
 		Gdx.gl.glLineWidth(20 * scl);
 		sr.setColor(Color.valueOf("00853A"));
@@ -270,13 +274,6 @@ public class SpaceScreen implements Screen {
 			timeToAttack = Constants.ATTACK_DELAY;
 		}
 		
-		sr = new ShapeRenderer();
-		sr.setProjectionMatrix(camera.combined);
-		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.valueOf("551A8BCD"));
-		for (Vector2 pos : clouds)
-			sr.circle(pos.x, pos.y, 125);
-		sr.end();
 		
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
