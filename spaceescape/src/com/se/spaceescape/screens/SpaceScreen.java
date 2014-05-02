@@ -288,6 +288,17 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 
+		game.hudBatch.begin();
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		zoomButton.draw(game.hudBatch);
+		game.hudBatch.end();
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.P))
+			game.setScreen(game.pauseScreen);
+
+		if(camera.zoom != Constants.DEFAULT_ZOOM)
+			return;
+		
 		sr.begin(ShapeType.Filled);
 		int initX = 70;
 		int initY = 100;
@@ -355,8 +366,6 @@ public class SpaceScreen implements Screen {
 			}
 			yPos += 160;
 		}
-		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
-		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -377,11 +386,6 @@ public class SpaceScreen implements Screen {
 			offset += 150;
 		}
 		sr.end();
-
-		debugRenderer.render(world, camera.combined);
-
-		if(Gdx.input.isKeyPressed(Input.Keys.P))
-			game.setScreen(game.pauseScreen);
 	}
 
 	@Override
