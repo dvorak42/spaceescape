@@ -47,9 +47,10 @@ public class SpaceScreen implements Screen {
 	Box2DDebugRenderer debugRenderer;
 	
 	public int selectedResource = Constants.RESOURCE_FOOD;
+	public float maximumOxygen = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
 
 	public Array<Array<ResourceItem>> resources;
-	public int oxygenRemaining;
+	public float oxygenRemaining;
 	public Array<Entity> entities;
 	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
@@ -330,7 +331,7 @@ public class SpaceScreen implements Screen {
 			sr.setColor(Constants.RESOURCE_COLORS[Constants.RESOURCE_OXYGEN]);
 			sr.arc(initX, initY + offset,
 					58, 90,
-					360f * ((float)oxygenRemaining / (float)Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]));
+					360f * ((float)oxygenRemaining / maximumOxygen));
 			sr.setColor(Color.WHITE);
 			sr.circle(initX, initY + offset, 40);
 		}
@@ -427,7 +428,7 @@ public class SpaceScreen implements Screen {
 			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
 				resources.get(rType).add(Utils.createResource(game, rType));
 		}
-		oxygenRemaining = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
+		oxygenRemaining = maximumOxygen;
 		
 		// Random map generation values for testing.
 		// A bunch of EOL comments just for completeness. They can be removed.
