@@ -10,8 +10,10 @@ import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Constants {
+	public static float FADE_DELAY = 5.0f;
+	
 	public static int ATTACK_MODE = 2; //1 = Hover, 2 = Lock
-	public static final float ATTACK_START_DIST = 500;
+	public static final float ATTACK_START_DIST = 350;
 	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 30.0f;
 	public static final float ATTACK_PROB = 0.8f;
@@ -23,15 +25,15 @@ public class Constants {
 	public static final float DEFAULT_ZOOM = 0.5f;
 	public static final float MAX_ZOOM = 4.0f;
 	
-	public static final int RESOURCE_SANITY   = 1;
+	public static final int RESOURCE_SANITY  = 1;
 	public static final int RESOURCE_WEAPONS = 2;
-	public static final int RESOURCE_FOOD = 3;
-	public static final int RESOURCE_OXYGEN = 4;
-	public static final int NUM_RESOURCES = 4;
+	public static final int RESOURCE_FOOD    = 3;
+	public static final int RESOURCE_OXYGEN  = 4;
+	public static final int NUM_RESOURCES    = 4;
 	
-	public static final Color FOOD_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
-	public static final Color WEAPON_COLOR = new Color(136/255.f, 213/255.f, 211/255.f, 1.f);
-	public static final Color HEART_COLOR = new Color(227/255.f, 144/255.f, 123/255.f, 1.f);
+	public static final Color FOOD_COLOR   = Color.valueOf("BD65CB");
+	public static final Color WEAPON_COLOR = Color.valueOf("AE594E");
+	public static final Color HEART_COLOR  = Color.valueOf("6DA65F");
 	
 	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
 	

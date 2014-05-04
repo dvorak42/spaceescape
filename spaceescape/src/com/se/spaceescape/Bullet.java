@@ -7,18 +7,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-public class ResourceItem extends PhysicalEntity {
-	int type;
-	float mass;
-	public String name;
-	public boolean leaving;
-	
-	public ResourceItem(SpaceEscapeGame g, Sprite s, int rType, String n) {
+public class Bullet extends PhysicalEntity {
+	public Bullet(SpaceEscapeGame g, Sprite s) {
 		super(g, s);
-		type = rType;
-		mass = 100;
-		name = n;
-		leaving = false;
 	}
 	
 	@Override
@@ -28,29 +19,22 @@ public class ResourceItem extends PhysicalEntity {
 		BodyDef bd = new BodyDef();
 		bd.position.set(pos);
 		bd.type = BodyType.DynamicBody;
-
+		bd.bullet = true;
+		
 		body = w.createBody(bd);
 
 		FixtureDef fd = new FixtureDef();
 		fd.density = 1.0f; 
-		fd.friction = 0.05f;
-		// TODO: Decide whether to use.
 		fd.isSensor = true;
-	    Utils.mainBodies.attachFixture(body, name, fd, sprite.getWidth());
-	    modelOrigin = Utils.mainBodies.getOrigin(name, sprite.getWidth());
-
-	    body.setAngularDamping(2.0f);
+	    Utils.mainBodies.attachFixture(body, "projectile", fd, sprite.getWidth());
+	    modelOrigin = Utils.mainBodies.getOrigin("projectile", sprite.getWidth());
 	    body.createFixture(fd);
 		body.setUserData(this);
-		sprite.setSize(60, 60);
 	}
 	
 	@Override
 	public void render() {
 		sprite.setColor(game.gameScreen.oC);
 		super.render();
-		
-		if(body.getWorldCenter().dst(game.gameScreen.spaceship.body.getWorldCenter()) > game.gameScreen.spaceship.getSize().x)
-			leaving = false;
 	}
 }
