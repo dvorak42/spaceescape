@@ -13,7 +13,7 @@ public class SpaceGestureListener implements GestureListener {
 	SpaceScreen screen;
 	Vector2 lastPress;
 	
-	int testX = 70;
+	int testX = 75;
 	int testY = 100;
 	int testOffset = 150;
 	
@@ -43,13 +43,13 @@ public class SpaceGestureListener implements GestureListener {
 		if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
 			return false;
 		
-		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 1296) {
-			screen.selectedResource = Constants.RESOURCE_FOOD;
-		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 1296) {
-			screen.selectedResource = Constants.RESOURCE_WEAPONS;
-		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 1296) {
+		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 3600) {
 			screen.selectedResource = Constants.RESOURCE_SANITY;
-//		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 1296) {
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 3600) {
+			screen.selectedResource = Constants.RESOURCE_WEAPONS;
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 3600) {
+			screen.selectedResource = Constants.RESOURCE_FOOD;
+//		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 3600) {
 //			screen.selectedResource = Constants.RESOURCE_OXYGEN;
 		} else {
 			for(ResourceGenerator rg : screen.generators) {

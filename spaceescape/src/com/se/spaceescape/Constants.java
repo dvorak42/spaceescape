@@ -23,9 +23,9 @@ public class Constants {
 	public static final float DEFAULT_ZOOM = 0.5f;
 	public static final float MAX_ZOOM = 4.0f;
 	
-	public static final int RESOURCE_FOOD   = 1;
+	public static final int RESOURCE_SANITY   = 1;
 	public static final int RESOURCE_WEAPONS = 2;
-	public static final int RESOURCE_SANITY = 3;
+	public static final int RESOURCE_FOOD = 3;
 	public static final int RESOURCE_OXYGEN = 4;
 	public static final int NUM_RESOURCES = 4;
 	
@@ -63,7 +63,7 @@ public class Constants {
 		}
 
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/chef.png"));
-		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/sentiment.png"));
+		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/oxygen.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/air" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("air" + i);
