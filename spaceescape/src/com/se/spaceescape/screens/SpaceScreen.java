@@ -84,7 +84,7 @@ public class SpaceScreen implements Screen {
 	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
 	
 	// Music
-	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
+	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic2.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;

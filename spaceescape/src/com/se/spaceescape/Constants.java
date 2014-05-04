@@ -14,15 +14,14 @@ public class Constants {
 	public static final float ATTACK_START_DIST = 500;
 	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 30.0f;
-	public static final float ATTACK_PROB = 0.8f;
+	public static final float ATTACK_PROB = 0.3f;
 	public static final int ATTACK_SIZE = 3;
-	public static final float STEAL_DELAY = 3.0f;
-	public static final float STEAL_PROB = 0.8f;
-	public static final float DESTROY_PROB = 0.1f;
+	public static final float STEAL_DELAY = 6.0f;
+	public static final float STEAL_PROB = 0.3f;
+	public static final float DESTROY_PROB = 0.03f;
 
 	public static final float DEFAULT_ZOOM = 0.5f;
-	public static final float MAX_ZOOM = 10.0f;
-	
+	public static final float MAX_ZOOM = 4.0f;
 	
 	public static final int RESOURCE_FOOD   = 1;
 	public static final int RESOURCE_WEAPONS = 2;
@@ -38,7 +37,7 @@ public class Constants {
 	
 	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_WEAPONS, RESOURCE_SANITY}; // Treat OXYGEN as a separate resource.
 	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, WEAPON_COLOR, HEART_COLOR, Color.GREEN};
-	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 200};
+	public static final int[] TOTAL_RESOURCE = {0, 7, 7, 7, 200};
 	public static final Texture[] RESOURCE_GENERATOR_TEXTURES = new Texture[NUM_RESOURCES + 1];
 	public static final Texture[] RESOURCE_ICONS = new Texture[NUM_RESOURCES + 1];
 	
