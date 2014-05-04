@@ -31,4 +31,10 @@ public class Bullet extends PhysicalEntity {
 	    body.createFixture(fd);
 		body.setUserData(this);
 	}
+	
+	@Override
+	public void render() {
+		sprite.setColor(game.gameScreen.oC);
+		super.render();
+	}
 }

@@ -30,14 +30,14 @@ public class ResourceGenerator extends Entity {
 		if(active) {
 			elapsedTime += Gdx.graphics.getDeltaTime();
 		} else {
-			sprite.setColor(Color.RED);
+			sprite.setColor(game.gameScreen.tint(Color.RED));
 			sprite.draw(game.hudBatch);
 			return;
 		}
 		
-		sprite.setColor(Color.GRAY);
+		sprite.setColor(game.gameScreen.tint(Color.GRAY));
 		sprite.draw(game.hudBatch);
-		sprite.setColor(Color.WHITE);
+		sprite.setColor(game.gameScreen.tint(Color.WHITE));
 		int h = (int)sprite.getHeight();
 		int w2 = sprite.getTexture().getWidth();
 		int h2 = sprite.getTexture().getHeight();

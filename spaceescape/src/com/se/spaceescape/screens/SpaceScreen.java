@@ -36,7 +36,12 @@ import com.se.spaceescape.Utils;
 
 public class SpaceScreen implements Screen {
 	public SpaceEscapeGame game;
+	public Color oC = Color.WHITE;
 
+	public Color tint(Color c) {
+		return oC.cpy().mul(c);
+	}
+	
 	public OrthographicCamera camera;
 	
 	public Spaceship spaceship;
@@ -175,6 +180,9 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		game.batch.setColor(oC);
+		game.hudBatch.setColor(oC);
+		
 		totalTime += delta;
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -211,11 +219,11 @@ public class SpaceScreen implements Screen {
 		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Line);
 		Gdx.gl.glLineWidth(20 * scl);
-		sr.setColor(Color.valueOf("00853A"));
+		sr.setColor(tint(Color.valueOf("00853A")));
 		sr.circle(midX, midY, 125 * scl, 100);
 		if(camera.zoom > Constants.DEFAULT_ZOOM) {
 			Gdx.gl.glLineWidth(80 * scl);
-			sr.setColor(Color.GREEN);
+			sr.setColor(tint(Color.GREEN));
 			sr.circle(midX,  midY, 200 * scl, 100);
 		}
 		sr.end();
@@ -242,7 +250,7 @@ public class SpaceScreen implements Screen {
 		
 		sr.begin(ShapeType.Filled);
 		Gdx.gl.glLineWidth(1);
-		sr.setColor(Color.valueOf("FFD700"));
+		sr.setColor(tint(Color.valueOf("FFD700")));
 		int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
 		if (navCount > closestPlanets.length)
 			navCount = closestPlanets.length;
@@ -257,7 +265,7 @@ public class SpaceScreen implements Screen {
 						    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
 			}
 		}
-		sr.setColor(Color.valueOf("a8ff00"));
+		sr.setColor(tint(Color.valueOf("a8ff00")));
 		Vector2 direction = planets.peek()
 				.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 		Vector2 ang1 = direction.cpy().rotate(10);
@@ -293,6 +301,7 @@ public class SpaceScreen implements Screen {
 		sr = new ShapeRenderer();
 
 		game.hudBatch.begin();
+		zoomButton.setColor(oC);
 		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, 50);
 		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
@@ -312,19 +321,19 @@ public class SpaceScreen implements Screen {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
 				if(rType == selectedResource) {
-					sr.setColor(Color.valueOf("00FF0070"));
+					sr.setColor(tint(Color.valueOf("00FF0070")));
 					sr.circle(initX, initY + offset, 70);
 				}
-				sr.setColor(Color.BLACK);
+				sr.setColor(tint(Color.BLACK));
 //				switch(rType) {
 //				case Constants.RESOURCE_FOOD:
-//					sr.setColor(Color.valueOf("7493e9"));
+//					sr.setColor(tint(Color.valueOf("7493e9")));
 //					break;
 //				case Constants.RESOURCE_SANITY:
-//					sr.setColor(Color.valueOf("7bcee3"));
+//					sr.setColor(tint(Color.valueOf("7bcee3")));
 //					break;
 //				case Constants.RESOURCE_WEAPONS:
-//					sr.setColor(Color.valueOf("d5888a"));
+//					sr.setColor(tint(Color.valueOf("d5888a")));
 //					break;
 //				}
 //				sr.circle(initX, initY + offset, 60);
@@ -332,9 +341,9 @@ public class SpaceScreen implements Screen {
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
 					if(i < resources.get(rType).size) {
-						sr.setColor(Constants.RESOURCE_COLORS[rType]);
+						sr.setColor(tint(Constants.RESOURCE_COLORS[rType]));
 					} else if(SHADOWED) {
-						sr.setColor(Color.GRAY);
+						sr.setColor(tint(Color.GRAY));
 					} else
 						continue;
 					
@@ -342,26 +351,26 @@ public class SpaceScreen implements Screen {
 				}
 				switch(rType) {
 				case Constants.RESOURCE_FOOD:
-					sr.setColor(Color.valueOf("BD65CB"));
+					sr.setColor(tint(Color.valueOf("BD65CB")));
 					break;
 				case Constants.RESOURCE_SANITY:
-					sr.setColor(Color.valueOf("6DA65F"));
+					sr.setColor(tint(Color.valueOf("6DA65F")));
 					break;
 				case Constants.RESOURCE_WEAPONS:
-					sr.setColor(Color.valueOf("AE594E"));
+					sr.setColor(tint(Color.valueOf("AE594E")));
 					break;
 				}
 				sr.circle(initX, initY + offset, 40);
 				offset += 150;
 			}
-			sr.setColor(Color.DARK_GRAY);
+			sr.setColor(tint(Color.DARK_GRAY));
 			sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
-			sr.setColor(Color.valueOf("ac2b1b80"));
+			sr.setColor(tint(Color.valueOf("ac2b1b80")));
 			float percentO2Remaining = ((float)oxygenRemaining / maximumOxygenSteps);
 			if (percentO2Remaining*MAX_TIME_LIMIT < 15f && (int) (percentO2Remaining*200) % 2 == 0) {
 				sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
 			}
-			sr.setColor(Color.valueOf("ac2b1b"));
+			sr.setColor(tint(Color.valueOf("ac2b1b")));
 			sr.rect(midX - 250, Gdx.graphics.getHeight() - 70,
 					500f * percentO2Remaining, 50);
 		}
@@ -376,12 +385,14 @@ public class SpaceScreen implements Screen {
 			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
 			s.setPosition(initX, initY + offset);
 			s.setSize(72, 72);
+			s.setColor(oC);
 			s.draw(game.hudBatch);
 			offset += 150;
 		}
 		Sprite s = new Sprite(Constants.RESOURCE_ICONS[Constants.RESOURCE_OXYGEN]);
 		s.setPosition(midX - 305 , Gdx.graphics.getHeight() - 68);
 		s.setSize(48, 48);
+		s.setColor(oC);
 		s.draw(game.hudBatch);
 
 		int yPos = 200;
@@ -402,13 +413,13 @@ public class SpaceScreen implements Screen {
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		sr.begin(ShapeType.Filled);
+	    sr.begin(ShapeType.Filled);
 		initX = 75;
 		initY = 100;
 		offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			if(rType == stealingResource) {
-				sr.setColor(Color.valueOf("FF0000B0"));
+				sr.setColor(tint(Color.valueOf("FF0000B0")));
 				sr.circle(initX, initY + offset, 60);
 			}
 			offset += 150;
@@ -418,7 +429,7 @@ public class SpaceScreen implements Screen {
 		if(enemies.size > 0) {
 			game.hudBatch.begin();
 			game.font.setScale(2);
-			game.font.setColor(Color.RED);
+			game.font.setColor(tint(Color.RED));
 			game.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			String str = "Throw things to defend!";
 			AlienShip closestEnemy = null;

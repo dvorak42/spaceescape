@@ -69,6 +69,7 @@ public class AlienShip extends PhysicalEntity {
 	
 	@Override
 	public void render() {
+		sprite.setColor(game.gameScreen.oC);
 		blinkTime -= Gdx.graphics.getDeltaTime();
 		if((blinkTime > 0 && blinkTime % 0.3 < 0.15) || blinkTime <= 0)
 			super.render();

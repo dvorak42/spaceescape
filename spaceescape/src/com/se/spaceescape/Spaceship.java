@@ -82,9 +82,9 @@ public class Spaceship extends PhysicalEntity {
 		
 		if(stealType < 0 || stealing % 0.3 > 0.15) {
 			if(stealType >= 0)
-				sprite.setColor(Color.RED);
+				sprite.setColor(game.gameScreen.tint(Color.RED));
 			super.render();
-			sprite.setColor(Color.WHITE);
+			sprite.setColor(game.gameScreen.tint(Color.WHITE));
 		}
 	}
 	
