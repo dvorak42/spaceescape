@@ -95,6 +95,7 @@ public class SpaceScreen implements Screen {
 	
 	// Music
 	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
+	public Music attackmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/battlemusic2.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -444,6 +445,31 @@ public class SpaceScreen implements Screen {
 				game.font.draw(game.hudBatch, str, strx / 2, 60);
 			game.font.setScale(1);
 			game.hudBatch.end();
+			if (bgmusicAudio.isPlaying()) {
+				if (bgmusicAudio.getVolume() > 0.2f) {
+				  bgmusicAudio.setVolume(bgmusicAudio.getVolume() - 0.01f);
+				} else {
+					bgmusicAudio.pause();
+				}
+			} else if (!attackmusicAudio.isPlaying()) {
+				attackmusicAudio.setVolume(0.2f);
+				attackmusicAudio.play();
+			} else if (attackmusicAudio.isPlaying() && attackmusicAudio.getVolume() < 1) {
+				attackmusicAudio.setVolume(attackmusicAudio.getVolume() + 0.01f);
+			}
+		} else {
+			if (attackmusicAudio.isPlaying()) {
+				if (attackmusicAudio.getVolume() > 0.2f) {
+					attackmusicAudio.setVolume(bgmusicAudio.getVolume() - 0.01f);
+				} else {
+					attackmusicAudio.pause();
+				}
+			} else if (!bgmusicAudio.isPlaying()) {
+				bgmusicAudio.setVolume(0.2f);
+				bgmusicAudio.play();
+			} else if (bgmusicAudio.isPlaying() && bgmusicAudio.getVolume() < 1) {
+				bgmusicAudio.setVolume(bgmusicAudio.getVolume() + 0.01f);
+			}
 		}
 		//debugRenderer.render(world, camera.combined);
 	}
