@@ -14,7 +14,7 @@ public class Constants {
 	public static final float ATTACK_START_DIST = 500;
 	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 30.0f;
-	public static final float ATTACK_PROB = 0.3f;
+	public static final float ATTACK_PROB = 0.8f;
 	public static final int ATTACK_SIZE = 3;
 	public static final float STEAL_DELAY = 6.0f;
 	public static final float STEAL_PROB = 0.3f;
@@ -35,8 +35,8 @@ public class Constants {
 	
 	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
 	
-	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_WEAPONS, RESOURCE_SANITY}; // Treat OXYGEN as a separate resource.
-	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, WEAPON_COLOR, HEART_COLOR, Color.GREEN};
+	public static final int[] RESOURCE_TYPES = {RESOURCE_SANITY, RESOURCE_WEAPONS, RESOURCE_FOOD}; // Treat OXYGEN as a separate resource.
+	public static final Color[] RESOURCE_COLORS = {Color.BLACK, HEART_COLOR, WEAPON_COLOR, FOOD_COLOR, Color.GREEN};
 	public static final int[] TOTAL_RESOURCE = {0, 7, 7, 7, 200};
 	public static final Texture[] RESOURCE_GENERATOR_TEXTURES = new Texture[NUM_RESOURCES + 1];
 	public static final Texture[] RESOURCE_ICONS = new Texture[NUM_RESOURCES + 1];
