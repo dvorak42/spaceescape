@@ -58,12 +58,19 @@ public class Planet extends PhysicalEntity {
 		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 3;
 		Vector2 spritePos = body.getPosition().sub(modelOrigin).add((0.5f - scl) * sprite.getWidth() / 2, (1.5f - scl) * sprite.getWidth() / 2);
 		Sprite s = new Sprite(new Texture(Gdx.files.internal("art/goal.png")));
+		s.setColor(game.gameScreen.oC);
 		s.setPosition(spritePos.x, spritePos.y);
 		s.setOrigin(modelOrigin.x, modelOrigin.y);
 		s.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 		s.setSize(s.getWidth() * scl, s.getHeight() * scl);
 		super.render();
 		s.draw(game.batch);
+	}
+	
+	@Override
+	public void render() {
+		sprite.setColor(game.gameScreen.oC);
+		super.render();
 	}
 	
 	public void runOrbit() {

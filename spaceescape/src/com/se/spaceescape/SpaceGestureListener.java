@@ -1,9 +1,6 @@
 package com.se.spaceescape;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -13,9 +10,9 @@ public class SpaceGestureListener implements GestureListener {
 	SpaceScreen screen;
 	Vector2 lastPress;
 	
-	int testX = 75;
-	int testY = 100;
-	int testOffset = 150;
+	int testX = 125;
+	int testY = 150;
+	int testOffset = 225;
 	
 	public SpaceGestureListener(SpaceScreen s) {
 		screen = s;
@@ -43,14 +40,12 @@ public class SpaceGestureListener implements GestureListener {
 		if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
 			return false;
 		
-		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 3600) {
+		if (Math.pow(x-testX,2) + Math.pow(y-testY, 2) < 10000) {
 			screen.selectedResource = Constants.RESOURCE_SANITY;
-		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 3600) {
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+testOffset), 2) < 10000) {
 			screen.selectedResource = Constants.RESOURCE_WEAPONS;
-		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 3600) {
+		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+2*testOffset), 2) < 10000) {
 			screen.selectedResource = Constants.RESOURCE_FOOD;
-//		} else if (Math.pow(x-testX,2) + Math.pow(y-(testY+3*testOffset), 2) < 3600) {
-//			screen.selectedResource = Constants.RESOURCE_OXYGEN;
 		} else {
 			for(ResourceGenerator rg : screen.generators) {
 				Vector2 p1 = rg.getPosition();
@@ -59,10 +54,6 @@ public class SpaceGestureListener implements GestureListener {
 					rg.tap();
 				}
 			}
-//			if(x < Gdx.graphics.getWidth() / 2)
-//				screen.spaceship.rotate(10);
-//			else
-//				screen.spaceship.rotate(-10);
 		}
 		return true;
 	}
@@ -113,7 +104,6 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
-		screen.camera.zoom = 0.1f*5 + 0.002f*(initialDistance - distance);
 		return false;
 	}
 

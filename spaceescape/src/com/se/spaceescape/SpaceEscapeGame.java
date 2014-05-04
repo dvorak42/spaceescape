@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.se.spaceescape.screens.PauseScreen;
 import com.se.spaceescape.screens.SpaceScreen;
+import com.se.spaceescape.screens.WinScreen;
 
 public class SpaceEscapeGame extends Game {
 	public PauseScreen pauseScreen;

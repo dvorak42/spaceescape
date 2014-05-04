@@ -1,6 +1,7 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -53,8 +54,22 @@ public class AlienShip extends PhysicalEntity {
 		body.applyAngularImpulse(1000 * dr, true);
 	}
 
+	public void shoot() {
+		Sprite bs = new Sprite(new Texture(Gdx.files.internal("art/projectile.png")));
+		bs.setSize(12.5f, 16.375f);
+		Vector2 pos = body.getWorldCenter().cpy().sub(new Vector2(8, 8));
+		Vector2 offset = game.gameScreen.spaceship.body.getWorldCenter().cpy().sub(pos);
+		Bullet b = new Bullet(game, bs);
+		b.initBody(world, pos);
+		b.body.setTransform(b.body.getPosition(), (offset.angle() - 90) * MathUtils.degRad);
+		Vector2 force = offset.cpy().nor().scl(10000000);
+		b.body.applyForce(force, b.body.getWorldCenter(), true);
+		screen.entities.add(b);
+	}
+	
 	@Override
 	public void render() {
+		sprite.setColor(game.gameScreen.oC);
 		blinkTime -= Gdx.graphics.getDeltaTime();
 		if((blinkTime > 0 && blinkTime % 0.3 < 0.15) || blinkTime <= 0)
 			super.render();
@@ -77,27 +92,17 @@ public class AlienShip extends PhysicalEntity {
 		
 		if(game.gameScreen.spaceship.body.getWorldCenter().dst(body.getWorldCenter()) < Constants.ATTACK_DIST * 1.3) {
 			stealTime -= Gdx.graphics.getDeltaTime();
-			if(stealTime < Constants.STEAL_DELAY / 2)
-				stealFunnel = true;
-			else
-				stealFunnel = false;
 			if(stealTime < 0) {
-				boolean steal = false;
+				boolean shoot = false;
 				for(int i = game.gameScreen.resources.get(Constants.RESOURCE_WEAPONS).size - 1; i < Constants.TOTAL_RESOURCE[Constants.RESOURCE_WEAPONS]; i++)
-					steal = steal || (MathUtils.random() < Constants.STEAL_PROB);
+					shoot = shoot || (MathUtils.random() < Constants.STEAL_PROB);
 
-				if(steal) {
-					game.gameScreen.spaceship.steal();
-					if(MathUtils.random() < Constants.DESTROY_PROB) {
-						ResourceGenerator rg = game.gameScreen.generators.get(MathUtils.random(game.gameScreen.generators.size - 1));
-						rg.setActive(false);
-					}
-					game.gameScreen.suctionAudio.play(0.3f);
+				if(shoot) {
+					shoot();
 				}
 				stealTime = Constants.STEAL_DELAY;
 			}
-		} else 
-			stealFunnel = false;
+		}
 	}
 	
 	public void hit(ResourceItem ri) {
