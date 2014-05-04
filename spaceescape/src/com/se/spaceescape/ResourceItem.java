@@ -11,12 +11,14 @@ public class ResourceItem extends PhysicalEntity {
 	int type;
 	float mass;
 	public String name;
+	public boolean leaving;
 	
 	public ResourceItem(SpaceEscapeGame g, Sprite s, int rType, String n) {
 		super(g, s);
 		type = rType;
 		mass = 100;
 		name = n;
+		leaving = false;
 	}
 	
 	@Override
@@ -35,9 +37,19 @@ public class ResourceItem extends PhysicalEntity {
 		// TODO: Decide whether to use.
 		fd.isSensor = true;
 	    Utils.mainBodies.attachFixture(body, name, fd, sprite.getWidth());
+	    modelOrigin = Utils.mainBodies.getOrigin(name, sprite.getWidth());
+
 	    body.setAngularDamping(2.0f);
 	    body.createFixture(fd);
 		body.setUserData(this);
 		sprite.setSize(60, 60);
+	}
+	
+	@Override
+	public void render() {
+		super.render();
+		
+		if(body.getWorldCenter().dst(game.gameScreen.spaceship.body.getWorldCenter()) > game.gameScreen.spaceship.getSize().x)
+			leaving = false;
 	}
 }

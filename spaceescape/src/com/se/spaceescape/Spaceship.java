@@ -61,9 +61,14 @@ public class Spaceship extends PhysicalEntity {
 		
 		if(stealType >= 0) {
 			if(stealing < 0) {
-				Array<ResourceItem> r = game.gameScreen.resources.get(stealType);
-				if(r != null && r.size > 0) {
-					r.pop();
+				if(MathUtils.random() < Constants.DESTROY_PROB && stealType < game.gameScreen.generators.size) {
+					ResourceGenerator rg = game.gameScreen.generators.get(stealType);
+					rg.setActive(false);
+				} else {
+					Array<ResourceItem> r = game.gameScreen.resources.get(stealType);
+					if(r != null && r.size > 0) {
+						r.pop();
+					}
 				}
 				stealType = -1;
 				game.gameScreen.stealingResource = -1;
@@ -77,28 +82,33 @@ public class Spaceship extends PhysicalEntity {
 		super.render();
 	}
 	
-	public void steal() {
+	public void steal(Bullet b) {
+		if(screen.toDestroy.contains(b, true))
+			return;
+		screen.toDestroy.add(b);
+		game.gameScreen.suctionAudio.play(0.3f);
 		stealing = 1.0f;
 		stealType = MathUtils.random(1, Constants.NUM_RESOURCES - 1);
 	}
 	
 	public void toss(Vector2 dir, ResourceItem ri) {
 		Vector2 offset = dir.nor().cpy().scl(sprite.getHeight() * 0.2f + ri.sprite.getHeight() * 1.5f);
-		Vector2 pos = body.getWorldCenter().cpy().add(offset);
+		Vector2 pos = body.getWorldCenter().cpy().sub(ri.getSize().cpy().scl(0.5f));
 		targetAngle = dir.angle() + 90;
 		ri.initBody(world, pos);
+		ri.leaving = true;
 		
 		Vector2 force = offset.cpy().nor().scl(10000000);
 		//ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		ri.body.applyForce(force, ri.body.getWorldCenter(), true);
-		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy(), true);
+		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), body.getWorldCenter(), true);
 		screen.entities.add(ri);
 		screen.tossedResources.add(ri);
 		screen.popAudio.play(0.7f);
 	}
 
 	public void acquire(ResourceItem ri) {
-		if(screen.toDestroy.contains(ri, true))
+		if(ri.leaving || screen.toDestroy.contains(ri, true))
 			return;
 		screen.itemGetAudio.play();
 		Utils.addItem(game, ri.type, getPosition());

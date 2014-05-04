@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -44,6 +45,8 @@ public class SpaceScreen implements Screen {
 	
 	World world;
 	Box2DDebugRenderer debugRenderer;
+	
+	float totalTime;
 	
 	public int selectedResource = Constants.RESOURCE_FOOD;
 	public float maximumOxygenSteps = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
@@ -171,6 +174,7 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		totalTime += delta;
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.position.set(spaceship.body.getWorldCenter(), 0);
@@ -208,6 +212,11 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glLineWidth(20 * scl);
 		sr.setColor(Color.valueOf("00853A"));
 		sr.circle(midX, midY, 125 * scl, 100);
+		if(camera.zoom > Constants.DEFAULT_ZOOM) {
+			Gdx.gl.glLineWidth(80 * scl);
+			sr.setColor(Color.GREEN);
+			sr.circle(midX,  midY, 200 * scl, 100);
+		}
 		sr.end();
 		
 		// Grab the two closest planets.
@@ -281,17 +290,9 @@ public class SpaceScreen implements Screen {
 		game.batch.end();
 		
 		sr = new ShapeRenderer();
-		sr.begin(ShapeType.Line);
-		sr.setColor(Color.BLACK);
-
-		for(AlienShip a : enemies) {
-			if(a.stealFunnel)
-				sr.line(a.body.getWorldCenter().x, a.body.getWorldCenter().y, spaceship.body.getWorldCenter().x, spaceship.body.getWorldCenter().y);
-		}
-		sr.end();
 
 		game.hudBatch.begin();
-		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, 50);
 		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
 		
@@ -382,7 +383,7 @@ public class SpaceScreen implements Screen {
 		s.setSize(48, 48);
 		s.draw(game.hudBatch);
 
-		int yPos = 50;
+		int yPos = 200;
 		for(ResourceGenerator r : generators) {
 			r.setSize(new Vector2(147, 147));
 			r.setPosition(new Vector2(Gdx.graphics.getWidth() - r.getSize().x - 50, yPos));
@@ -412,6 +413,27 @@ public class SpaceScreen implements Screen {
 			offset += 150;
 		}
 		sr.end();
+		
+		if(enemies.size > 0) {
+			game.hudBatch.begin();
+			game.font.setScale(2);
+			game.font.setColor(Color.RED);
+			game.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			String str = "Throw things to defend!";
+			AlienShip closestEnemy = null;
+			Vector2 sp = spaceship.body.getWorldCenter();
+			for(AlienShip e : enemies)
+				if(closestEnemy == null || e.body.getWorldCenter().dst(sp) < closestEnemy.body.getWorldCenter().dst(sp))
+					closestEnemy = e;
+			if(closestEnemy.body.getWorldCenter().dst(sp) > 250)
+				str = "Warning: Enemies incoming!";
+			float strx = Gdx.graphics.getWidth() - game.font.getBounds(str).width;
+			if(totalTime % 0.5 < 0.25)
+				game.font.draw(game.hudBatch, str, strx / 2, 60);
+			game.font.setScale(1);
+			game.hudBatch.end();
+		}
+		debugRenderer.render(world, camera.combined);
 	}
 
 	@Override
@@ -571,17 +593,18 @@ public class SpaceScreen implements Screen {
 		enemies = new Array<AlienShip>();
 		
 		generators = new Array<ResourceGenerator>();
-		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
-		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
-		generators.add(sanityGenerator);
+
+		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
 
 		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_WEAPONS]);
 		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
 		generators.add(weaponsGenerator);
 
-		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
-		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
-		generators.add(foodGenerator);
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
+		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
+		generators.add(sanityGenerator);
 		
 		timeToAttack = Constants.ATTACK_DELAY;
 		
