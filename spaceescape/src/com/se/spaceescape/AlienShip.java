@@ -92,6 +92,7 @@ public class AlienShip extends PhysicalEntity {
 						ResourceGenerator rg = game.gameScreen.generators.get(MathUtils.random(game.gameScreen.generators.size - 1));
 						rg.setActive(false);
 					}
+					game.gameScreen.suctionAudio.play(0.3f);
 				}
 				stealTime = Constants.STEAL_DELAY;
 			}
@@ -107,6 +108,7 @@ public class AlienShip extends PhysicalEntity {
 			health -= 50;
 			blinkTime = 2;
 			if(health <= 0) {
+				game.gameScreen.explosionAudio.play(0.3f);
 				this.kill();
 				screen.toDestroy.add(this);
 			}

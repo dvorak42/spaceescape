@@ -24,9 +24,9 @@ public class Constants {
 	public static final float MAX_ZOOM = 10.0f;
 	
 	
-	public static final int RESOURCE_FOOD   = 1;
+	public static final int RESOURCE_SANITY   = 1;
 	public static final int RESOURCE_WEAPONS = 2;
-	public static final int RESOURCE_SANITY = 3;
+	public static final int RESOURCE_FOOD = 3;
 	public static final int RESOURCE_OXYGEN = 4;
 	public static final int NUM_RESOURCES = 4;
 	
@@ -36,9 +36,9 @@ public class Constants {
 	
 	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
 	
-	public static final int[] RESOURCE_TYPES = {RESOURCE_FOOD, RESOURCE_WEAPONS, RESOURCE_SANITY}; // Treat OXYGEN as a separate resource.
-	public static final Color[] RESOURCE_COLORS = {Color.BLACK, FOOD_COLOR, WEAPON_COLOR, HEART_COLOR, Color.GREEN};
-	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 200};
+	public static final int[] RESOURCE_TYPES = {RESOURCE_SANITY, RESOURCE_WEAPONS, RESOURCE_FOOD}; // Treat OXYGEN as a separate resource.
+	public static final Color[] RESOURCE_COLORS = {Color.BLACK, HEART_COLOR, WEAPON_COLOR, FOOD_COLOR, Color.GREEN};
+	public static final int[] TOTAL_RESOURCE = {0, 12, 12, 12, 500};
 	public static final Texture[] RESOURCE_GENERATOR_TEXTURES = new Texture[NUM_RESOURCES + 1];
 	public static final Texture[] RESOURCE_ICONS = new Texture[NUM_RESOURCES + 1];
 	
@@ -64,7 +64,7 @@ public class Constants {
 		}
 
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/chef.png"));
-		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/sentiment.png"));
+		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/oxygen.png"));
 		for(int i = 1; i < 7; i++) {
 			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/air" + i + ".png")));
 			RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("air" + i);

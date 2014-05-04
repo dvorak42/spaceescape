@@ -12,7 +12,7 @@ public class AlertEntity extends Entity {
 		super(g, s);
 		plus = Constants.PLUS_SPRITE;
 		this.type = type;
-		lifespan = 1.0f;
+		lifespan = 1.5f;
 	}
 	
 	@Override
@@ -30,9 +30,14 @@ public class AlertEntity extends Entity {
 		}
 		
 		plus.setSize(getSize().x, getSize().y);
-		plus.setPosition(sprite.getX(), sprite.getY() + ((1 - lifespan) * 32));
-		sprite.setPosition(sprite.getX() + getSize().x - 4, sprite.getY() + ((1 - lifespan) * 32));
-		plus.draw(game.hudBatch, 1 - (float)Math.sqrt(1 - lifespan));
-		sprite.draw(game.hudBatch, 1 - (float)Math.sqrt(1 - lifespan));
+		plus.setPosition(sprite.getX(), sprite.getY() + ((1.5f - lifespan) * 32));
+		sprite.setPosition(sprite.getX() + getSize().x - 4, sprite.getY() + ((1.5f - lifespan) * 32));
+		if (lifespan < 1) {
+		  plus.draw(game.hudBatch, 1 - (float)Math.sqrt(1-lifespan));
+		  sprite.draw(game.hudBatch, 1 - (float)Math.sqrt(1-lifespan));
+		} else {
+	      plus.draw(game.hudBatch);
+		  sprite.draw(game.hudBatch);
+		}
 	}
 }

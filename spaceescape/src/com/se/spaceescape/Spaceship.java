@@ -94,11 +94,13 @@ public class Spaceship extends PhysicalEntity {
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), pos.cpy(), true);
 		screen.entities.add(ri);
 		screen.tossedResources.add(ri);
+		screen.popAudio.play(0.7f);
 	}
 
 	public void acquire(ResourceItem ri) {
 		if(screen.toDestroy.contains(ri, true))
 			return;
+		screen.itemGetAudio.play();
 		Utils.addItem(game, ri.type, getPosition());
 		screen.toDestroy.add(ri);
 	}

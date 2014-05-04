@@ -55,15 +55,15 @@ public class Planet extends PhysicalEntity {
 	}
 	
 	public void renderEnd() {
-		Vector2 spritePos = body.getPosition().sub(modelOrigin);
+		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 3;
+		Vector2 spritePos = body.getPosition().sub(modelOrigin).add((0.5f - scl) * sprite.getWidth() / 2, (1.5f - scl) * sprite.getWidth() / 2);
 		Sprite s = new Sprite(new Texture(Gdx.files.internal("art/goal.png")));
 		s.setPosition(spritePos.x, spritePos.y);
 		s.setOrigin(modelOrigin.x, modelOrigin.y);
 		s.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 3;
 		s.setSize(s.getWidth() * scl, s.getHeight() * scl);
-		s.draw(game.batch);
 		super.render();
+		s.draw(game.batch);
 	}
 	
 	public void runOrbit() {

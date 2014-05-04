@@ -3,6 +3,8 @@ package com.se.spaceescape.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
@@ -41,15 +43,17 @@ public class SpaceScreen implements Screen {
 	public boolean paused = false;
 	
 	World world;
-	float worldTime = 0;
-	float MAX_TIME_LIMIT = 60f;
-	float stepTime = MAX_TIME_LIMIT / 200f;
 	Box2DDebugRenderer debugRenderer;
 	
 	public int selectedResource = Constants.RESOURCE_FOOD;
+	public float maximumOxygenSteps = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
+	
+	float worldTime = 0;
+	float MAX_TIME_LIMIT = 30f; // LEVEL TIME IN SECONDS
+	float stepTime = MAX_TIME_LIMIT / maximumOxygenSteps;
 
 	public Array<Array<ResourceItem>> resources;
-	public int oxygenRemaining;
+	public float oxygenRemaining;
 	public Array<Entity> entities;
 	public Array<AlertEntity> hovering;
 	public Array<ResourceItem> tossedResources;
@@ -73,6 +77,15 @@ public class SpaceScreen implements Screen {
 	public int stealingResource = -1;
 	
 	public Sprite zoomButton;
+	
+	// Sounds
+	public Sound suctionAudio = Gdx.audio.newSound(Gdx.files.internal("music/suction.wav"));
+	public Sound popAudio = Gdx.audio.newSound(Gdx.files.internal("music/pop.mp3"));
+	public Sound itemGetAudio = Gdx.audio.newSound(Gdx.files.internal("music/itemget.wav"));
+	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
+	
+	// Music
+	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
@@ -190,12 +203,7 @@ public class SpaceScreen implements Screen {
 
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		ShapeRenderer sr = new ShapeRenderer();
-		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.valueOf("551A8BCD"));
-		for (Vector2 pos : clouds)
-			sr.circle(pos.x * scl, pos.y * scl, 125 * scl);
-		sr.end();
+		sr = new ShapeRenderer();
 		sr.begin(ShapeType.Line);
 		Gdx.gl.glLineWidth(20 * scl);
 		sr.setColor(Color.valueOf("00853A"));
@@ -226,6 +234,8 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glLineWidth(1);
 		sr.setColor(Color.valueOf("FFD700"));
 		int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
+		if (navCount > closestPlanets.length)
+			navCount = closestPlanets.length;
 		for (int i = 0; i < navCount; i++) {
 			if (closestPlanets[i] < 700000) {
 				Vector2 direction = planets.get(closestPlanetsIdx[i])
@@ -256,14 +266,6 @@ public class SpaceScreen implements Screen {
 			timeToAttack = Constants.ATTACK_DELAY;
 		}
 		
-		sr = new ShapeRenderer();
-		sr.setProjectionMatrix(camera.combined);
-		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.valueOf("551A8BCD"));
-		for (Vector2 pos : clouds)
-			sr.circle(pos.x, pos.y, 125);
-		sr.end();
-		
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
 		spaceship.render();
@@ -288,14 +290,42 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 
+		game.hudBatch.begin();
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		zoomButton.draw(game.hudBatch);
+		game.hudBatch.end();
+		
+		if(Gdx.input.isKeyPressed(Input.Keys.P))
+			game.setScreen(game.pauseScreen);
+
+		if(camera.zoom != Constants.DEFAULT_ZOOM)
+			return;
+		
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		sr.begin(ShapeType.Filled);
-		int initX = 70;
+		int initX = 75;
 		int initY = 100;
 		if (SEGMENTED_UI) {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
-				sr.setColor(Color.WHITE);
-				sr.circle(initX, initY + offset, 60);
+				if(rType == selectedResource) {
+					sr.setColor(Color.valueOf("00FF0070"));
+					sr.circle(initX, initY + offset, 70);
+				}
+				sr.setColor(Color.BLACK);
+//				switch(rType) {
+//				case Constants.RESOURCE_FOOD:
+//					sr.setColor(Color.valueOf("7493e9"));
+//					break;
+//				case Constants.RESOURCE_SANITY:
+//					sr.setColor(Color.valueOf("7bcee3"));
+//					break;
+//				case Constants.RESOURCE_WEAPONS:
+//					sr.setColor(Color.valueOf("d5888a"));
+//					break;
+//				}
+//				sr.circle(initX, initY + offset, 60);
 				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
@@ -308,36 +338,47 @@ public class SpaceScreen implements Screen {
 					
 					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
 				}
-				sr.setColor(Color.WHITE);
+				switch(rType) {
+				case Constants.RESOURCE_FOOD:
+					sr.setColor(Color.valueOf("BD65CB"));
+					break;
+				case Constants.RESOURCE_SANITY:
+					sr.setColor(Color.valueOf("6DA65F"));
+					break;
+				case Constants.RESOURCE_WEAPONS:
+					sr.setColor(Color.valueOf("AE594E"));
+					break;
+				}
 				sr.circle(initX, initY + offset, 40);
 				offset += 150;
 			}
-			sr.setColor(Color.WHITE);
-			sr.circle(initX, initY + offset, 60);
-			sr.setColor(Constants.RESOURCE_COLORS[Constants.RESOURCE_OXYGEN]);
-			sr.arc(initX, initY + offset,
-					58, 90,
-					360f * ((float)oxygenRemaining / (float)Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN]));
-			sr.setColor(Color.WHITE);
-			sr.circle(initX, initY + offset, 40);
+			sr.setColor(Color.DARK_GRAY);
+			sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
+			sr.setColor(Color.valueOf("ac2b1b80"));
+			float percentO2Remaining = ((float)oxygenRemaining / maximumOxygenSteps);
+			if (percentO2Remaining*MAX_TIME_LIMIT < 15f && (int) (percentO2Remaining*200) % 2 == 0) {
+				sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
+			}
+			sr.setColor(Color.valueOf("ac2b1b"));
+			sr.rect(midX - 250, Gdx.graphics.getHeight() - 70,
+					500f * percentO2Remaining, 50);
 		}
 		sr.end();
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 34;
+		initX = 39;
 		initY = 64;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
-			
 			s.setPosition(initX, initY + offset);
 			s.setSize(72, 72);
 			s.draw(game.hudBatch);
 			offset += 150;
 		}
-		Sprite s = new Sprite(Constants.RESOURCE_IMGS.get(Constants.RESOURCE_OXYGEN).get(0));
-		s.setPosition(initX , initY + offset);
+		Sprite s = new Sprite(Constants.RESOURCE_ICONS[Constants.RESOURCE_OXYGEN]);
+		s.setPosition(midX - 305 , Gdx.graphics.getHeight() - 68);
 		s.setSize(48, 48);
 		s.draw(game.hudBatch);
 
@@ -355,21 +396,15 @@ public class SpaceScreen implements Screen {
 			}
 			yPos += 160;
 		}
-		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
-		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		sr.begin(ShapeType.Filled);
-		initX = 70;
+		initX = 75;
 		initY = 100;
 		offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
-			if(rType == selectedResource) {
-				sr.setColor(Color.valueOf("00FF0070"));
-				sr.circle(initX, initY + offset, 68);
-			}
 			if(rType == stealingResource) {
 				sr.setColor(Color.valueOf("FF0000B0"));
 				sr.circle(initX, initY + offset, 60);
@@ -377,11 +412,6 @@ public class SpaceScreen implements Screen {
 			offset += 150;
 		}
 		sr.end();
-
-		debugRenderer.render(world, camera.combined);
-
-		if(Gdx.input.isKeyPressed(Input.Keys.P))
-			game.setScreen(game.pauseScreen);
 	}
 
 	@Override
@@ -421,7 +451,7 @@ public class SpaceScreen implements Screen {
 			for(int i = 0; i < Constants.TOTAL_RESOURCE[rType]; i++)
 				resources.get(rType).add(Utils.createResource(game, rType));
 		}
-		oxygenRemaining = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
+		oxygenRemaining = maximumOxygenSteps;
 		
 		// Random map generation values for testing.
 		// A bunch of EOL comments just for completeness. They can be removed.
@@ -541,11 +571,7 @@ public class SpaceScreen implements Screen {
 		enemies = new Array<AlienShip>();
 		
 		generators = new Array<ResourceGenerator>();
-		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
-		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
-		generators.add(foodGenerator);
-
-		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
+		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
 		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
 		generators.add(sanityGenerator);
 
@@ -553,6 +579,10 @@ public class SpaceScreen implements Screen {
 		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
 		generators.add(weaponsGenerator);
 
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
+		
 		timeToAttack = Constants.ATTACK_DELAY;
 		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
@@ -561,6 +591,8 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
 		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
 		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
+		
+		bgmusicAudio.play();
 	}
 
 	@Override
@@ -583,6 +615,11 @@ public class SpaceScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		suctionAudio.dispose();
+		popAudio.dispose();
+		itemGetAudio.dispose();
+		explosionAudio.dispose();
+		bgmusicAudio.dispose();
 	}
 
 }
