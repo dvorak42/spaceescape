@@ -47,6 +47,7 @@ public class ResourceItem extends PhysicalEntity {
 	
 	@Override
 	public void render() {
+		sprite.setColor(game.gameScreen.oC);
 		super.render();
 		
 		if(body.getWorldCenter().dst(game.gameScreen.spaceship.body.getWorldCenter()) > game.gameScreen.spaceship.getSize().x)
