@@ -321,7 +321,7 @@ public class SpaceScreen implements Screen {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
 				if(rType == selectedResource) {
-					sr.setColor(tint(Color.valueOf("00FF0070")));
+					sr.setColor(tint(Color.valueOf("FFDB76")));
 					sr.circle(initX, initY + offset, 110);
 				}
 				sr.setColor(tint(Color.BLACK));
