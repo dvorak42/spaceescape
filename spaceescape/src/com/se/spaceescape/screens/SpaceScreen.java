@@ -315,14 +315,14 @@ public class SpaceScreen implements Screen {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		sr.begin(ShapeType.Filled);
-		int initX = 75;
-		int initY = 100;
+		int initX = 125;
+		int initY = 150;
 		if (SEGMENTED_UI) {
 			int offset = 0;
 			for(int rType : Constants.RESOURCE_TYPES) {
 				if(rType == selectedResource) {
 					sr.setColor(tint(Color.valueOf("00FF0070")));
-					sr.circle(initX, initY + offset, 70);
+					sr.circle(initX, initY + offset, 110);
 				}
 				sr.setColor(tint(Color.BLACK));
 //				switch(rType) {
@@ -347,7 +347,7 @@ public class SpaceScreen implements Screen {
 					} else
 						continue;
 					
-					sr.arc(initX,initY + offset, 58, 90 + (i * arclength), arclength - 5, 3);					
+					sr.arc(initX,initY + offset, 98, 90 + (i * arclength), arclength - 5, 3);
 				}
 				switch(rType) {
 				case Constants.RESOURCE_FOOD:
@@ -360,8 +360,8 @@ public class SpaceScreen implements Screen {
 					sr.setColor(tint(Color.valueOf("AE594E")));
 					break;
 				}
-				sr.circle(initX, initY + offset, 40);
-				offset += 150;
+				sr.circle(initX, initY + offset, 60);
+				offset += 225;
 			}
 			sr.setColor(tint(Color.DARK_GRAY));
 			sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
@@ -378,16 +378,16 @@ public class SpaceScreen implements Screen {
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 39;
-		initY = 64;
+		initX = 72;
+		initY = 96;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			Sprite s = new Sprite(Constants.RESOURCE_ICONS[rType]);
 			s.setPosition(initX, initY + offset);
-			s.setSize(72, 72);
+			s.setSize(108, 108);
 			s.setColor(oC);
 			s.draw(game.hudBatch);
-			offset += 150;
+			offset += 225;
 		}
 		Sprite s = new Sprite(Constants.RESOURCE_ICONS[Constants.RESOURCE_OXYGEN]);
 		s.setPosition(midX - 305 , Gdx.graphics.getHeight() - 68);
@@ -413,16 +413,16 @@ public class SpaceScreen implements Screen {
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 	    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-	    sr.begin(ShapeType.Filled);
-		initX = 75;
-		initY = 100;
+		sr.begin(ShapeType.Filled);
+		initX = 125;
+		initY = 150;
 		offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
 			if(rType == stealingResource) {
 				sr.setColor(tint(Color.valueOf("FF0000B0")));
-				sr.circle(initX, initY + offset, 60);
+				sr.circle(initX, initY + offset, 110);
 			}
-			offset += 150;
+			offset += 225;
 		}
 		sr.end();
 		
