@@ -433,7 +433,7 @@ public class SpaceScreen implements Screen {
 			game.font.setScale(1);
 			game.hudBatch.end();
 		}
-		debugRenderer.render(world, camera.combined);
+		//debugRenderer.render(world, camera.combined);
 	}
 
 	@Override
@@ -594,18 +594,18 @@ public class SpaceScreen implements Screen {
 		
 		generators = new Array<ResourceGenerator>();
 
-		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
-		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
-		generators.add(foodGenerator);
+		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
+		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
+		generators.add(sanityGenerator);
 
 		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_WEAPONS]);
 		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
 		generators.add(weaponsGenerator);
-
-		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
-		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
-		generators.add(sanityGenerator);
 		
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
+
 		timeToAttack = Constants.ATTACK_DELAY;
 		
 		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));

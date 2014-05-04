@@ -1,6 +1,7 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -79,7 +80,12 @@ public class Spaceship extends PhysicalEntity {
 				game.gameScreen.stealingResource = 0;
 		}
 		
-		super.render();
+		if(stealType < 0 || stealing % 0.3 > 0.15) {
+			if(stealType >= 0)
+				sprite.setColor(Color.RED);
+			super.render();
+			sprite.setColor(Color.WHITE);
+		}
 	}
 	
 	public void steal(Bullet b) {
