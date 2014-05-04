@@ -24,15 +24,15 @@ public class Constants {
 	public static final float MAX_ZOOM = 10.0f;
 	
 	
-	public static final int RESOURCE_SANITY   = 1;
+	public static final int RESOURCE_SANITY  = 1;
 	public static final int RESOURCE_WEAPONS = 2;
-	public static final int RESOURCE_FOOD = 3;
-	public static final int RESOURCE_OXYGEN = 4;
-	public static final int NUM_RESOURCES = 4;
+	public static final int RESOURCE_FOOD    = 3;
+	public static final int RESOURCE_OXYGEN  = 4;
+	public static final int NUM_RESOURCES    = 4;
 	
-	public static final Color FOOD_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
-	public static final Color WEAPON_COLOR = new Color(136/255.f, 213/255.f, 211/255.f, 1.f);
-	public static final Color HEART_COLOR = new Color(227/255.f, 144/255.f, 123/255.f, 1.f);
+	public static final Color FOOD_COLOR   = Color.valueOf("BD65CB");
+	public static final Color WEAPON_COLOR = Color.valueOf("AE594E");
+	public static final Color HEART_COLOR  = Color.valueOf("6DA65F");
 	
 	public static final Color HIGHLIGHT_COLOR = new Color(233/255.f, 202/255.f, 116/255.f, 1.f);
 	
