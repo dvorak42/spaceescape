@@ -52,7 +52,7 @@ public class SpaceScreen implements Screen {
 	public float maximumOxygenSteps = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
 	
 	float worldTime = 0;
-	float MAX_TIME_LIMIT = 30f; // LEVEL TIME IN SECONDS
+	float MAX_TIME_LIMIT = 60f; // LEVEL TIME IN SECONDS
 	float stepTime = MAX_TIME_LIMIT / maximumOxygenSteps;
 
 	public Array<Array<ResourceItem>> resources;
@@ -70,6 +70,7 @@ public class SpaceScreen implements Screen {
 	// TODO: REMOVE THIS AND CHOOSE
 	private boolean SEGMENTED_UI = true;
 	private boolean SHADOWED = true;
+	private boolean RANDOM_LEVEL = false;
 	
 	ShapeRenderer sr;
 	
@@ -475,6 +476,123 @@ public class SpaceScreen implements Screen {
 		}
 		oxygenRemaining = maximumOxygenSteps;
 		
+		if (RANDOM_LEVEL) {
+			placePlanetsRandomly();
+		} else {
+			// (60 * Oxygen Time Limit) is usually larger than
+			// the distance a player can get from flinging all
+			// 36 items steadily in an attempt to get to the
+			// home planet.
+			int[] endplanet = {250, 3440};
+			int[][] newPlanets = { { 400,   2500, 250, 1},
+					               { 1667,  1400, 150, 2},
+					               { -200, -1508, 150, 2},
+					               {-1109,   600, 250, 1},
+					               { 1480,  -237, 250, 1},
+					               { 2480, -1237, 150, 2},
+					               {-1980,  -837, 250, 1},
+					               {-3200,  2000, 150, 2},
+					               { 3200,  3400, 250, 1},
+					               {-3200, -3400, 150, 2},
+					               };
+			int[][] newClouds  = { {-1724,   968, 100},
+					               { 1001,   597, 100},
+					               {  200, -3000, 100},
+					               {-1600,  2400, 100},
+					               {-2000, -1500, 100},
+			                       };
+			placePlanets(endplanet, newPlanets, newClouds);
+		}
+
+		zoomButton = new Sprite(new Texture(Gdx.files.internal("art/button.png")));
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+		
+		enemies = new Array<AlienShip>();
+		
+		generators = new Array<ResourceGenerator>();
+		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
+		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
+		generators.add(sanityGenerator);
+
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_WEAPONS]);
+		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
+		generators.add(weaponsGenerator);
+
+		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
+		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
+		generators.add(foodGenerator);
+		
+		timeToAttack = Constants.ATTACK_DELAY;
+		
+		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
+		
+		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
+		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
+		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
+		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
+		
+		bgmusicAudio.play();
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dispose() {
+		suctionAudio.dispose();
+		popAudio.dispose();
+		itemGetAudio.dispose();
+		explosionAudio.dispose();
+		bgmusicAudio.dispose();
+	}
+	
+	/*
+	 * endPlanet  = location of end planet. [x, y]
+	 * newPlanets = list of planets.        [x, y, size, filename]
+	 * newClouds  = list of clouds.         [x, y, size]
+	 */
+	private void placePlanets(int[] endPlanet, int[][] newPlanets, int[][] newClouds) {
+		Planet p = Utils.createPlanet(game, world, "goldplanet", 50,  new Vector2(endPlanet[0], endPlanet[1]));
+		p.endPlanet = true;
+		planets.add(p);
+		
+		for (int i = 0; i < newPlanets.length; i++) {
+			p = Utils.createPlanet(game, world, "planet" + newPlanets[i][3], newPlanets[i][2], new Vector2(newPlanets[i][0], newPlanets[i][1]));
+			for(int j = 0; j < 8; j++)
+				p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
+			planets.add(p);
+			entities.addAll(p.getOrbitters());
+		}
+		
+		ResourceItem cloudFood = null;
+		Vector2 cloudPos = null;
+		for (int i = 0; i < newClouds.length; i++) {
+			cloudPos = new Vector2(newClouds[i][0], newClouds[i][1]);
+			for(int j = 0; j < 4; j++) {
+				cloudFood = Utils.createResource(game, Constants.RESOURCE_OXYGEN);
+				cloudFood.initBody(world, cloudPos.cpy().add(new Vector2(newClouds[i][2], 0).rotate(MathUtils.random(360f))));
+				entities.add(cloudFood);
+			}
+			clouds.add(cloudPos);
+		}
+	}
+	
+	private void placePlanetsRandomly() {
 		// Random map generation values for testing.
 		// A bunch of EOL comments just for completeness. They can be removed.
 		int MIN_DIST_GOAL = 1000; // Minimum distance from start -> goal.
@@ -488,9 +606,7 @@ public class SpaceScreen implements Screen {
 		int MIN_OXYGEN_CLOUDS = 1; // The minimum number of oxygen clouds.
 		int MAX_OXYGEN_CLOUDS = 4; // The maximum number of oxygen clouds.
 		int MIN_SEPARATION_PLANETS = 250000; // The minimum squared distance between planets.
-		int MAX_SEPARATION_PLANETS; // The maximum distance between planets.
 		int MIN_SEPARATION_CLOUDS = 500000; // The minimum distance between oxygen clouds.
-		int MAX_SEPARATION_CLOUDS; // The maximum distance between oxygen clouds.
 		int MIN_PLANET_SIZE = 50;
 		int MAX_PLANET_SIZE = 125;
 		
@@ -586,63 +702,5 @@ public class SpaceScreen implements Screen {
 		p = Utils.createPlanet(game, world, "goldplanet", 50, randomPos);
 		p.endPlanet = true;
 		planets.add(p);
-
-		zoomButton = new Sprite(new Texture(Gdx.files.internal("art/button.png")));
-		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
-		
-		enemies = new Array<AlienShip>();
-		
-		generators = new Array<ResourceGenerator>();
-
-		Sprite gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_SANITY]);
-		ResourceGenerator sanityGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_SANITY);
-		generators.add(sanityGenerator);
-
-		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_WEAPONS]);
-		ResourceGenerator weaponsGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_WEAPONS);
-		generators.add(weaponsGenerator);
-		
-		gSprite = new Sprite(Constants.RESOURCE_GENERATOR_TEXTURES[Constants.RESOURCE_FOOD]);
-		ResourceGenerator foodGenerator = new ResourceGenerator(game, gSprite, Constants.RESOURCE_FOOD);
-		generators.add(foodGenerator);
-
-		timeToAttack = Constants.ATTACK_DELAY;
-		
-		Gdx.input.setInputProcessor(new GestureDetector(new SpaceGestureListener(this)));
-		
-		Gdx.gl.glEnable(GL10.GL_LINE_SMOOTH);
-		Gdx.gl.glEnable(GL10.GL_POINT_SMOOTH);
-		Gdx.gl.glHint(GL10.GL_POLYGON_SMOOTH_HINT, GL10.GL_NICEST);
-		Gdx.gl.glHint(GL10.GL_POINT_SMOOTH_HINT, GL10.GL_NICEST);
-		
-		bgmusicAudio.play();
 	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void dispose() {
-		suctionAudio.dispose();
-		popAudio.dispose();
-		itemGetAudio.dispose();
-		explosionAudio.dispose();
-		bgmusicAudio.dispose();
-	}
-
 }
