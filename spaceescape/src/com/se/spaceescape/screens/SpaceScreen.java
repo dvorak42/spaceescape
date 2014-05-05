@@ -57,7 +57,7 @@ public class SpaceScreen implements Screen {
 	public float maximumOxygenSteps = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
 	
 	float worldTime = 0;
-	float MAX_TIME_LIMIT = 60f; // LEVEL TIME IN SECONDS
+	float MAX_TIME_LIMIT = 120f; // LEVEL TIME IN SECONDS
 	float stepTime = MAX_TIME_LIMIT / maximumOxygenSteps;
 
 	public Array<Array<ResourceItem>> resources;
@@ -428,7 +428,7 @@ public class SpaceScreen implements Screen {
 		
 		if(enemies.size > 0) {
 			game.hudBatch.begin();
-			game.font.setScale(2);
+			game.font.setScale(5);
 			game.font.setColor(tint(Color.RED));
 			game.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			String str = "Throw things to defend!";

@@ -16,14 +16,14 @@ public class Constants {
 	public static final float ATTACK_START_DIST = 350;
 	public static final float ATTACK_DIST = 150;
 	public static final float ATTACK_DELAY = 30.0f;
-	public static final float ATTACK_PROB = 0.8f;
+	public static final float ATTACK_PROB = 0.3f;
 	public static final int ATTACK_SIZE = 3;
-	public static final float STEAL_DELAY = 6.0f;
+	public static final float STEAL_DELAY = 10.0f;
 	public static final float STEAL_PROB = 0.3f;
 	public static final float DESTROY_PROB = 0.03f;
 
 	public static final float DEFAULT_ZOOM = 0.5f;
-	public static final float MAX_ZOOM = 4.0f;
+	public static final float MAX_ZOOM = 10.0f;
 	
 	public static final int RESOURCE_SANITY  = 1;
 	public static final int RESOURCE_WEAPONS = 2;
