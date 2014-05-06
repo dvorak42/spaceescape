@@ -35,6 +35,9 @@ import com.se.spaceescape.Spaceship;
 import com.se.spaceescape.Utils;
 
 public class SpaceScreen implements Screen {
+	public float elapsedTime;
+	public int pickedUp;
+	
 	public SpaceEscapeGame game;
 	public Color oC = Color.WHITE;
 
@@ -57,8 +60,7 @@ public class SpaceScreen implements Screen {
 	public float maximumOxygenSteps = Constants.TOTAL_RESOURCE[Constants.RESOURCE_OXYGEN];
 	
 	float worldTime = 0;
-	float MAX_TIME_LIMIT = 120f; // LEVEL TIME IN SECONDS
-	float stepTime = MAX_TIME_LIMIT / maximumOxygenSteps;
+	float stepTime = Constants.MAX_TIME_LIMIT / maximumOxygenSteps;
 
 	public Array<Array<ResourceItem>> resources;
 	public float oxygenRemaining;
@@ -100,14 +102,11 @@ public class SpaceScreen implements Screen {
 	public SpaceScreen(SpaceEscapeGame g) {
 		game = g;
 		
-		world = new World(new Vector2(0, 0), true);
-		debugRenderer = new Box2DDebugRenderer();
-		
-		world.setContactListener(new SpaceContactListener());
 	}
 	
 	public void runPhysics(float delta) {
 		if(!paused) {
+			elapsedTime += delta;
 			Vector2 shipPos = spaceship.body.getPosition();
 			for (ResourceItem ri : tossedResources) {
 				// The camera size / 3 seemed to work on desktop and tablet builds
@@ -171,7 +170,7 @@ public class SpaceScreen implements Screen {
 		float angle = MathUtils.random(360);
 
 		for(int i = 0; i < Constants.ATTACK_SIZE; i++) {
-			AlienShip a = new AlienShip(game, this, new Sprite(Constants.SPACESHIP_TEXTURE), new Vector2(0, Constants.ATTACK_DIST).rotate(angle + 120 * i));
+			AlienShip a = new AlienShip(game, this, new Sprite(Constants.ATTACKER_TEXTURE), new Vector2(0, Constants.ATTACK_DIST).rotate(angle + 120 * i));
 			a.setSize(new Vector2(64, 64));
 			a.initBody(world, spaceship.getPosition().cpy().add(new Vector2(0, Constants.ATTACK_START_DIST).rotate(angle + 120 * i)));
 			entities.add(a);
@@ -266,8 +265,14 @@ public class SpaceScreen implements Screen {
 						    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
 			}
 		}
+		
+		Planet goal = null;
+		for(Planet p : planets)
+			if(p.endPlanet)
+				goal = p;
+		
 		sr.setColor(tint(Color.valueOf("a8ff00")));
-		Vector2 direction = planets.peek()
+		Vector2 direction = goal
 				.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 		Vector2 ang1 = direction.cpy().rotate(10);
 		Vector2 ang2 = direction.cpy().rotate(-10);			
@@ -279,7 +284,9 @@ public class SpaceScreen implements Screen {
 
 		
 		timeToAttack -= Gdx.graphics.getDeltaTime();
-		if(timeToAttack < 0) {
+		if(Constants.ATTACK_DELAY < 0 && oxygenRemaining < maximumOxygenSteps / 2) {
+			attackPlayer();
+		} else if(Constants.ATTACK_DELAY > 0 && timeToAttack < 0) {
 			if(MathUtils.random() < Constants.ATTACK_PROB)
 				attackPlayer();
 			timeToAttack = Constants.ATTACK_DELAY;
@@ -287,14 +294,17 @@ public class SpaceScreen implements Screen {
 		
 		game.batch.setProjectionMatrix(camera.combined);
 		game.batch.begin();
+		for(Entity r : planets) {
+			Planet p = (Planet)r;
+			if(p.endPlanet && camera.zoom > Constants.DEFAULT_ZOOM)
+				p.renderEnd();
+		}
 		spaceship.render();
 		for(Entity r : entities)
 			r.render();
 		for(Entity r : planets) {
 			Planet p = (Planet)r;
-			if(p.endPlanet && camera.zoom > Constants.DEFAULT_ZOOM)
-				p.renderEnd();
-			else
+			if(!p.endPlanet || camera.zoom <= Constants.DEFAULT_ZOOM)
 				r.render();
 		}
 		game.batch.end();
@@ -368,7 +378,7 @@ public class SpaceScreen implements Screen {
 			sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
 			sr.setColor(tint(Color.valueOf("ac2b1b80")));
 			float percentO2Remaining = ((float)oxygenRemaining / maximumOxygenSteps);
-			if (percentO2Remaining*MAX_TIME_LIMIT < 15f && (int) (percentO2Remaining*200) % 2 == 0) {
+			if (percentO2Remaining*Constants.MAX_TIME_LIMIT < 15f && (int) (percentO2Remaining*200) % 2 == 0) {
 				sr.rect(midX - 254, Gdx.graphics.getHeight() - 74, 508, 58);
 			}
 			sr.setColor(tint(Color.valueOf("ac2b1b")));
@@ -435,14 +445,18 @@ public class SpaceScreen implements Screen {
 			String str = "Throw things to defend!";
 			AlienShip closestEnemy = null;
 			Vector2 sp = spaceship.body.getWorldCenter();
-			for(AlienShip e : enemies)
+			for(AlienShip e : enemies) {
 				if(closestEnemy == null || e.body.getWorldCenter().dst(sp) < closestEnemy.body.getWorldCenter().dst(sp))
 					closestEnemy = e;
+				if(e.body.getWorldCenter().dst(sp) < 250 && e.fleeTimer == -1) {
+					e.fleeTimer = Constants.FLEE_TIMER;
+				}
+			}
 			if(closestEnemy.body.getWorldCenter().dst(sp) > 250)
 				str = "Warning: Enemies incoming!";
 			float strx = Gdx.graphics.getWidth() - game.font.getBounds(str).width;
 			if(totalTime % 0.5 < 0.25)
-				game.font.draw(game.hudBatch, str, strx / 2, 60);
+				game.font.draw(game.hudBatch, str, strx / 2, Gdx.graphics.getHeight() - 75);
 			game.font.setScale(1);
 			game.hudBatch.end();
 			if (bgmusicAudio.isPlaying()) {
@@ -487,6 +501,10 @@ public class SpaceScreen implements Screen {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
+		world = new World(new Vector2(0, 0), true);
+		debugRenderer = new Box2DDebugRenderer();
+		
+		world.setContactListener(new SpaceContactListener());
 		camera = new OrthographicCamera(w, h);
 		camera.zoom = Constants.DEFAULT_ZOOM;
 		
@@ -604,14 +622,15 @@ public class SpaceScreen implements Screen {
 	 * newClouds  = list of clouds.         [x, y, size]
 	 */
 	private void placePlanets(int[] endPlanet, int[][] newPlanets, int[][] newClouds) {
-		Planet p = Utils.createPlanet(game, world, "goldplanet", 50,  new Vector2(endPlanet[0], endPlanet[1]));
+		Planet p = Utils.createPlanet(game, world, "earth", 50,  new Vector2(endPlanet[0], endPlanet[1]));
 		p.endPlanet = true;
 		planets.add(p);
 		
 		for (int i = 0; i < newPlanets.length; i++) {
 			p = Utils.createPlanet(game, world, "planet" + newPlanets[i][3], newPlanets[i][2], new Vector2(newPlanets[i][0], newPlanets[i][1]));
+			int rType = MathUtils.random(1, Constants.NUM_RESOURCES - 1);
 			for(int j = 0; j < 8; j++)
-				p.addOrbitter(Utils.createResource(game, Constants.RESOURCE_FOOD));
+				p.addOrbitter(Utils.createResource(game, rType));
 			planets.add(p);
 			entities.addAll(p.getOrbitters());
 		}

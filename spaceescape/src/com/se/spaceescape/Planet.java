@@ -55,9 +55,9 @@ public class Planet extends PhysicalEntity {
 	}
 	
 	public void renderEnd() {
-		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 3;
-		Vector2 spritePos = body.getPosition().sub(modelOrigin).add((0.5f - scl) * sprite.getWidth() / 2, (1.5f - scl) * sprite.getWidth() / 2);
+		float scl = game.gameScreen.camera.zoom / Constants.DEFAULT_ZOOM / 4;
 		Sprite s = new Sprite(new Texture(Gdx.files.internal("art/earth.png")));
+		Vector2 spritePos = body.getPosition().sub(modelOrigin).add((1.0f - scl) * s.getWidth() / 2, (1.0f - scl) * s.getWidth() / 2);
 		s.setColor(game.gameScreen.oC);
 		s.setPosition(spritePos.x, spritePos.y);
 		s.setOrigin(modelOrigin.x, modelOrigin.y);

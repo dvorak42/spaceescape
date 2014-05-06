@@ -3,7 +3,6 @@ package com.se.spaceescape.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,59 +10,59 @@ import com.badlogic.gdx.graphics.Texture;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.SpaceEscapeGame;
 
-public class WinScreen implements Screen {
+public class SplashScreen implements Screen {
 	SpaceEscapeGame game;
-	SpaceScreen parent;
-	public Sound winGameAudio = Gdx.audio.newSound(Gdx.files.internal("music/wingame.mp3"));
-	float fadeDelay;
+	SpaceScreen next;
 	OrthographicCamera camera;
 	Texture background;
-
-	public WinScreen(SpaceEscapeGame g, SpaceScreen parent) {
+	float fadeDelay = -1;
+	
+	public SplashScreen(SpaceEscapeGame g, SpaceScreen next) {
 		game = g;
-		this.parent = parent;
-		fadeDelay = Constants.FADE_DELAY;
+		this.next = next;
 	}
 
 	@Override
 	public void render(float delta) {
-		fadeDelay -= delta;
-		if(fadeDelay < 0)
-			fadeDelay = 0.0f;
-
+		if(fadeDelay > 0)
+			fadeDelay -= delta;
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		float d = fadeDelay / Constants.FADE_DELAY;
-		game.gameScreen.oC = new Color(1, 1, 1, d);
+		if(d < 0)
+			d = 1;
+		game.gameScreen.oC = new Color(1, 1, 1, 1-d);
 
-		parent.paused = true;
-		parent.render(0);
-		parent.paused = false;
+		next.paused = true;
+		next.render(0);
+		next.paused = false;
 		game.gameScreen.oC = Color.WHITE;
 		
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		game.menuBatch.setProjectionMatrix(camera.combined);
 		game.menuBatch.begin();
-		game.menuBatch.setColor(Color.WHITE.cpy().mul(1 - d));
+		game.menuBatch.setColor(Color.WHITE.cpy().mul(d));
 		game.menuBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.font.setColor(Color.BLACK.cpy().mul(1 - d));
-		game.font.draw(game.menuBatch, String.format("Elapsed Time: %.2f", game.gameScreen.elapsedTime), 10, 110);
-		game.font.draw(game.menuBatch, String.format("Total Items Gathered: %d", game.gameScreen.pickedUp), 10, 70);
-		game.font.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
 		game.menuBatch.end();
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-			Gdx.app.exit();
+		if(Gdx.input.isTouched() && fadeDelay == -1)
+			fadeDelay = Constants.FADE_DELAY;
+		if(fadeDelay < 0 && fadeDelay != -1)
+			game.setScreen(next);
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		next.resize(width, height);
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override
 	public void show() {
-		background = new Texture(Gdx.files.internal("art/happyending.png"));
+		next.show();
+		background = new Texture(Gdx.files.internal("art/splash.png"));
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		winGameAudio.play();
 	}
 
 	@Override
@@ -86,7 +85,8 @@ public class WinScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		winGameAudio.dispose();
+		// TODO Auto-generated method stub
+
 	}
 
 }

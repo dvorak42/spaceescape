@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.se.spaceescape.Constants;
 import com.se.spaceescape.SpaceEscapeGame;
 
@@ -12,6 +14,8 @@ public class LoseScreen implements Screen {
 	SpaceEscapeGame game;
 	SpaceScreen parent;
 	float fadeDelay;
+	OrthographicCamera camera;
+	Texture background;
 	
 	public LoseScreen(SpaceEscapeGame g, SpaceScreen parent) {
 		game = g;
@@ -25,7 +29,7 @@ public class LoseScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		fadeDelay -= delta;
 		if(fadeDelay < 0)
-			fadeDelay = 0.0f;
+			fadeDelay = 2.0f;
 
 		float d = fadeDelay / Constants.FADE_DELAY;
 		game.gameScreen.oC = new Color(d, d, d, 1);
@@ -35,9 +39,12 @@ public class LoseScreen implements Screen {
 		parent.paused = false;
 		game.gameScreen.oC = Color.WHITE;
 		
+		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		game.menuBatch.setProjectionMatrix(camera.combined);
 		game.menuBatch.begin();
+		game.menuBatch.setColor(Color.WHITE.cpy().mul(1 - d));
+		game.menuBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		game.font.setColor(Color.WHITE.cpy().mul(1 - d));
-		game.font.draw(game.menuBatch, "You lose!", 10, 60);
 		game.font.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
 		game.menuBatch.end();
 		
@@ -47,14 +54,13 @@ public class LoseScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override
 	public void show() {
-		// TODO Auto-generated method stub
-
+		background = new Texture(Gdx.files.internal("art/gameover.png"));
+		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override

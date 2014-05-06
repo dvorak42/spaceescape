@@ -4,8 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.se.spaceescape.screens.LoseScreen;
 import com.se.spaceescape.screens.PauseScreen;
 import com.se.spaceescape.screens.SpaceScreen;
+import com.se.spaceescape.screens.SplashScreen;
 import com.se.spaceescape.screens.WinScreen;
 
 public class SpaceEscapeGame extends Game {
@@ -30,7 +32,7 @@ public class SpaceEscapeGame extends Game {
 		
 		gameScreen = new SpaceScreen(this);
 		pauseScreen = new PauseScreen(this, gameScreen);
-		setScreen(gameScreen);
+		setScreen(new SplashScreen(this, gameScreen));
 	}
 	
 	@Override

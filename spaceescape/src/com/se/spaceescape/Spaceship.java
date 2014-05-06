@@ -55,7 +55,7 @@ public class Spaceship extends PhysicalEntity {
 	public void render() {
 		stealing -= Gdx.graphics.getDeltaTime();
 		
-		if(game.gameScreen.enemies.size > 0) {
+		if(game.gameScreen.enemies.size > 0 && Constants.STOP_MOVE) {
 			body.setLinearVelocity(Vector2.Zero);
 			body.setAngularVelocity(0);
 		}
@@ -118,6 +118,7 @@ public class Spaceship extends PhysicalEntity {
 			return;
 		screen.itemGetAudio.play();
 		Utils.addItem(game, ri.type, getPosition());
+		screen.pickedUp++;
 		screen.toDestroy.add(ri);
 	}
 }

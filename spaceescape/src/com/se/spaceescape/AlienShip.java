@@ -17,6 +17,8 @@ public class AlienShip extends PhysicalEntity {
 	float blinkTime;
 	float stealTime;
 	Vector2 offset;
+	public float fleeTimer = -1;
+	boolean flee = false;
 	
 	public AlienShip(SpaceEscapeGame g, SpaceScreen screen, Sprite s, Vector2 os) {
 		super(g, s);
@@ -41,8 +43,8 @@ public class AlienShip extends PhysicalEntity {
 	    fd.density = 0.1f;
 	    fd.friction = 0.5f;
 	    fd.restitution = 0.3f;
-	    Utils.mainBodies.attachFixture(body, "spaceshuttle", fd, sprite.getWidth());
-	    modelOrigin = Utils.mainBodies.getOrigin("spaceshuttle", sprite.getWidth());
+	    Utils.mainBodies.attachFixture(body, "attacker", fd, sprite.getWidth());
+	    modelOrigin = Utils.mainBodies.getOrigin("attacker", sprite.getWidth());
 	    
 	    body.setUserData(this);
 	    body.setLinearDamping(1);
@@ -68,8 +70,16 @@ public class AlienShip extends PhysicalEntity {
 	
 	@Override
 	public void render() {
+		float dt = Gdx.graphics.getDeltaTime();
+		if(fleeTimer >= 0) {
+			fleeTimer -= dt;
+			if(fleeTimer <= 0) {
+				flee = true;
+			}
+		}
+
 		sprite.setColor(game.gameScreen.oC);
-		blinkTime -= Gdx.graphics.getDeltaTime();
+		blinkTime -= dt;
 		if((blinkTime > 0 && blinkTime % 0.3 < 0.15) || blinkTime <= 0)
 			super.render();
 		
@@ -79,15 +89,17 @@ public class AlienShip extends PhysicalEntity {
 			if(pPos.dst(body.getWorldCenter()) < Constants.ATTACK_DIST)
 				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(-10000), body.getWorldCenter(), true);
 			if(pPos.dst(body.getWorldCenter()) > Constants.ATTACK_DIST * 1.3)
-				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
+				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(flee ? -100000 : 10000), body.getWorldCenter(), true);
 			
 		} else if(Constants.ATTACK_MODE == 2) {
 			Vector2 pPos = game.gameScreen.spaceship.body.getWorldCenter().add(offset);
 			
 			if(pPos.dst(body.getWorldCenter()) > 10)
-				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(10000), body.getWorldCenter(), true);
+				body.applyForce(pPos.cpy().sub(body.getWorldCenter()).nor().scl(flee ? -100000 : 10000), body.getWorldCenter(), true);
 		}
 		
+		if(flee && game.gameScreen.spaceship.body.getWorldCenter().dst(body.getWorldCenter()) > Constants.ATTACK_START_DIST)
+			game.gameScreen.toDestroy.add(this);
 		
 		if(game.gameScreen.spaceship.body.getWorldCenter().dst(body.getWorldCenter()) < Constants.ATTACK_DIST * 1.3) {
 			stealTime -= Gdx.graphics.getDeltaTime();
