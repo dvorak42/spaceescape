@@ -10,6 +10,6 @@
 	<classpathentry exported="true" kind="lib" path="/spaceescape/libs/bodyeditor-loader.jar" sourcepath="/spaceescape/libs/bodyeditor-loader-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/spaceescape/libs/gdx.jar" sourcepath="/spaceescape/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/spaceescape/libs/tween-engine-api.jar" sourcepath="/spaceescape/libs/tween-engine-api-sources.jar"/>
-	<classpathentry kind="lib" path="/spaceescape/libs/gdx-freetype.jar"/>
+	<classpathentry exported="true" kind="lib" path="/spaceescape/libs/gdx-freetype.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
