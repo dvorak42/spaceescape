@@ -44,8 +44,8 @@ public class LoseScreen implements Screen {
 		game.menuBatch.begin();
 		game.menuBatch.setColor(Color.WHITE.cpy().mul(1 - d));
 		game.menuBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.font.setColor(Color.WHITE.cpy().mul(1 - d));
-		game.font.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
+		game.smallFont.setColor(Color.WHITE.cpy().mul(1 - d));
+		game.smallFont.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
 		game.menuBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE))

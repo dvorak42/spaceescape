@@ -25,8 +25,8 @@ public class PauseScreen implements Screen {
 		parent.paused = false;
 		
 		game.menuBatch.begin();
-		game.font.setColor(Color.BLACK);
-		game.font.draw(game.menuBatch, "Press space to resume", 10, 30);
+		game.smallFont.setColor(Color.BLACK);
+		game.smallFont.draw(game.menuBatch, "Press space to resume", 10, 30);
 		game.menuBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE))

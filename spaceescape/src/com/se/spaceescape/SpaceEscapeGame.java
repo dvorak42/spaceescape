@@ -1,9 +1,11 @@
 package com.se.spaceescape;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.se.spaceescape.screens.LoseScreen;
 import com.se.spaceescape.screens.PauseScreen;
 import com.se.spaceescape.screens.SpaceScreen;
@@ -19,7 +21,8 @@ public class SpaceEscapeGame extends Game {
     public SpriteBatch menuBatch;
 
     public SpriteBatch backgroundBatch;
-    public BitmapFont font;
+    public BitmapFont smallFont;
+    public BitmapFont bigFont;
 		
 	@Override
 	public void create() {
@@ -28,7 +31,10 @@ public class SpaceEscapeGame extends Game {
 		batch = new SpriteBatch();
 		backgroundBatch = new SpriteBatch();
 		menuBatch = new SpriteBatch();
-		font = new BitmapFont();
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/mizufalp.ttf"));
+		smallFont = generator.generateFont(24);
+		bigFont = generator.generateFont(42);
+		generator.dispose();
 		
 		gameScreen = new SpaceScreen(this);
 		pauseScreen = new PauseScreen(this, gameScreen);
@@ -45,6 +51,7 @@ public class SpaceEscapeGame extends Game {
 		batch.dispose();
 		hudBatch.dispose();
 		backgroundBatch.dispose();
-		font.dispose();
+		smallFont.dispose();
+		bigFont.dispose();
 	}
 }

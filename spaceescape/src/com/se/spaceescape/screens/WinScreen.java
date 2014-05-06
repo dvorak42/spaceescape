@@ -44,10 +44,10 @@ public class WinScreen implements Screen {
 		game.menuBatch.begin();
 		game.menuBatch.setColor(Color.WHITE.cpy().mul(1 - d));
 		game.menuBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.font.setColor(Color.BLACK.cpy().mul(1 - d));
-		game.font.draw(game.menuBatch, String.format("Elapsed Time: %.2f", game.gameScreen.elapsedTime), 10, 110);
-		game.font.draw(game.menuBatch, String.format("Total Items Gathered: %d", game.gameScreen.pickedUp), 10, 70);
-		game.font.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
+		game.smallFont.setColor(Color.BLACK.cpy().mul(1 - d));
+		game.smallFont.draw(game.menuBatch, String.format("Elapsed Time: %.2f", game.gameScreen.elapsedTime), 10, 110);
+		game.smallFont.draw(game.menuBatch, String.format("Total Items Gathered: %d", game.gameScreen.pickedUp), 10, 70);
+		game.smallFont.draw(game.menuBatch, "Press SPACE to quit.", 10, 30);
 		game.menuBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE))

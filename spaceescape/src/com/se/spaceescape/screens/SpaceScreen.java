@@ -439,9 +439,8 @@ public class SpaceScreen implements Screen {
 		
 		if(enemies.size > 0) {
 			game.hudBatch.begin();
-			game.font.setScale(5);
-			game.font.setColor(tint(Color.RED));
-			game.font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+			game.bigFont.setColor(tint(Color.RED));
+			game.bigFont.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			String str = "Throw things to defend!";
 			AlienShip closestEnemy = null;
 			Vector2 sp = spaceship.body.getWorldCenter();
@@ -454,10 +453,9 @@ public class SpaceScreen implements Screen {
 			}
 			if(closestEnemy.body.getWorldCenter().dst(sp) > 250)
 				str = "Warning: Enemies incoming!";
-			float strx = Gdx.graphics.getWidth() - game.font.getBounds(str).width;
+			float strx = Gdx.graphics.getWidth() - game.bigFont.getBounds(str).width;
 			if(totalTime % 0.5 < 0.25)
-				game.font.draw(game.hudBatch, str, strx / 2, Gdx.graphics.getHeight() - 75);
-			game.font.setScale(1);
+				game.bigFont.draw(game.hudBatch, str, strx / 2, Gdx.graphics.getHeight() - 75);
 			game.hudBatch.end();
 			if (bgmusicAudio.isPlaying()) {
 				if (bgmusicAudio.getVolume() > 0.2f) {

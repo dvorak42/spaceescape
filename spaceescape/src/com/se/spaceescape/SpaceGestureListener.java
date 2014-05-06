@@ -1,5 +1,6 @@
 package com.se.spaceescape;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
@@ -20,12 +21,18 @@ public class SpaceGestureListener implements GestureListener {
 	
 	@Override
 	public boolean touchDown(float x, float y, int pointer, int button) {
+		if(screen.paused)
+			return false;
+		
 		lastPress = new Vector2(x, y);
 		return false;
 	}
 
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
+		if(screen.paused)
+			return false;
+
 		y = Gdx.graphics.getHeight() - y;
 		
 		if (Math.pow(x - (screen.zoomButton.getX() + screen.zoomButton.getWidth() / 2), 2) + 
@@ -66,6 +73,9 @@ public class SpaceGestureListener implements GestureListener {
 
 	@Override
 	public boolean fling(float velocityX, float velocityY, int button) {
+		if(screen.paused)
+			return false;
+
 		if(screen.camera.zoom > Constants.DEFAULT_ZOOM)
 			return false;
 

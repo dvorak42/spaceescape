@@ -34,9 +34,7 @@ public class SplashScreen implements Screen {
 			d = 1;
 		game.gameScreen.oC = new Color(1, 1, 1, 1-d);
 
-		next.paused = true;
 		next.render(0);
-		next.paused = false;
 		game.gameScreen.oC = Color.WHITE;
 		
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -45,7 +43,7 @@ public class SplashScreen implements Screen {
 		game.menuBatch.setColor(Color.WHITE.cpy().mul(d));
 		game.menuBatch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		game.menuBatch.end();
-		
+
 		if(Gdx.input.isTouched() && fadeDelay == -1)
 			fadeDelay = Constants.FADE_DELAY;
 		if(fadeDelay < 0 && fadeDelay != -1)
@@ -60,15 +58,16 @@ public class SplashScreen implements Screen {
 
 	@Override
 	public void show() {
+		next.paused = true;
 		next.show();
+		next.paused = true;
 		background = new Texture(Gdx.files.internal("art/splash.png"));
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-
+		next.paused = false;
 	}
 
 	@Override
