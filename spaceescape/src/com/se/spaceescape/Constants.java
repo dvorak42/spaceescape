@@ -23,7 +23,7 @@ public class Constants {
 	public static final float DESTROY_PROB = 0.03f;
 
 	public static final float DEFAULT_ZOOM = 0.5f;
-	public static final float MAX_ZOOM = 10.0f;
+	public static final float MAX_ZOOM = 6.0f;
 	
 	public static final int RESOURCE_SANITY  = 1;
 	public static final int RESOURCE_WEAPONS = 2;

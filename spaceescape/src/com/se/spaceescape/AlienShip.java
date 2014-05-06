@@ -16,7 +16,6 @@ public class AlienShip extends PhysicalEntity {
 	public int health;
 	float blinkTime;
 	float stealTime;
-	public boolean stealFunnel = false;
 	Vector2 offset;
 	
 	public AlienShip(SpaceEscapeGame g, SpaceScreen screen, Sprite s, Vector2 os) {
@@ -24,7 +23,7 @@ public class AlienShip extends PhysicalEntity {
 		this.screen = screen;
 		health = 100;
 		blinkTime = 0;
-		stealTime = 0;
+		stealTime = Constants.STEAL_DELAY;
 		offset = os;
 	}
 	
