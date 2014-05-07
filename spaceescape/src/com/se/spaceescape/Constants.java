@@ -74,7 +74,7 @@ public class Constants {
 		RESOURCE_GENERATOR_TEXTURES[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/chef.png"));
 		RESOURCE_ICONS[RESOURCE_OXYGEN] = new Texture(Gdx.files.internal("art/oxygen.png"));
 		for(int i = 1; i < 7; i++) {
-			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/air" + i + ".png")));
+			RESOURCE_IMGS.get(RESOURCE_OXYGEN).add(new Texture(Gdx.files.internal("art/oxygen.png")));
 			RESOURCE_NAMES.get(RESOURCE_OXYGEN).add("air" + i);
 		}
 

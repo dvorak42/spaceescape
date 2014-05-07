@@ -92,7 +92,6 @@ public class Spaceship extends PhysicalEntity {
 		if(screen.toDestroy.contains(b, true))
 			return;
 		screen.toDestroy.add(b);
-		game.gameScreen.suctionAudio.play(0.3f);
 		stealing = 1.0f;
 		stealType = MathUtils.random(1, Constants.NUM_RESOURCES - 1);
 	}

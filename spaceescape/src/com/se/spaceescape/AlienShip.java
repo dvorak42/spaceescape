@@ -66,6 +66,7 @@ public class AlienShip extends PhysicalEntity {
 		Vector2 force = offset.cpy().nor().scl(10000000);
 		b.body.applyForce(force, b.body.getWorldCenter(), true);
 		screen.entities.add(b);
+		screen.attackAudio.play(0.3f);
 	}
 	
 	@Override

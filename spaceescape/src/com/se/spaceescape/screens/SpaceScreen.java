@@ -93,7 +93,7 @@ public class SpaceScreen implements Screen {
 	public Sprite zoomButton;
 	
 	// Sounds
-	public Sound suctionAudio = Gdx.audio.newSound(Gdx.files.internal("music/suction.wav"));
+	public Sound attackAudio = Gdx.audio.newSound(Gdx.files.internal("music/suction.wav"));
 	public Sound popAudio = Gdx.audio.newSound(Gdx.files.internal("music/pop.mp3"));
 	public Sound itemGetAudio = Gdx.audio.newSound(Gdx.files.internal("music/itemget.wav"));
 	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
@@ -319,6 +319,17 @@ public class SpaceScreen implements Screen {
 			Planet p = (Planet)r;
 			if(!p.endPlanet || camera.zoom <= Constants.DEFAULT_ZOOM)
 				r.render();
+		}
+		if (camera.zoom > Constants.DEFAULT_ZOOM) {
+			for(Vector2 pos : clouds) {
+				if (camera.zoom > Constants.DEFAULT_ZOOM) {
+					Sprite s = new Sprite(Constants.RESOURCE_ICONS[Constants.RESOURCE_OXYGEN]);
+					s.setPosition(pos.x-100, pos.y-100);
+					s.setSize(300, 300);
+					s.setColor(oC);
+					s.draw(game.batch);
+				}
+			}
 		}
 		game.batch.end();
 		
@@ -555,16 +566,16 @@ public class SpaceScreen implements Screen {
 			// 36 items steadily in an attempt to get to the
 			// home planet.
 			int[] endplanet = {-5800, 3700};
-			int[][] newPlanets = { {-2200,  4500, 250, 1},
-					               { -933,  3400, 150, 2},
-					               {-2800,   492, 150, 2},
-					               {-3709,  2600, 250, 1},
-					               {-1120,  1763, 250, 1},
-					               { -120,   763, 150, 2},
-					               {-4580,  1163, 250, 1},
-					               {-5800,  2800, 150, 2},
-					               {  600,  5400, 250, 1},
-					               {-5800, -1400, 150, 2},
+			int[][] newPlanets = { {-2200,  4500, 150, Constants.RESOURCE_SANITY},
+					               { -933,  3400, 250, Constants.RESOURCE_WEAPONS},
+					               {-2800,   492, 250, Constants.RESOURCE_WEAPONS},
+					               {-3709,  2600, 150, Constants.RESOURCE_SANITY},
+					               {-1120,  1763, 150, Constants.RESOURCE_SANITY},
+					               { -120,   763, 250, Constants.RESOURCE_WEAPONS},
+					               {-4580,  1163, 150, Constants.RESOURCE_SANITY},
+					               {-5800,  2800, 250, Constants.RESOURCE_WEAPONS},
+					               {  600,  5400, 150, Constants.RESOURCE_SANITY},
+					               {-5800, -1400, 250, Constants.RESOURCE_WEAPONS},
 					               };
 			int[][] newClouds  = { {-4324,  2968, 100},
 					               {-1599,  2597, 100},
@@ -609,24 +620,21 @@ public class SpaceScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void dispose() {
-		suctionAudio.dispose();
+		attackAudio.dispose();
 		popAudio.dispose();
 		itemGetAudio.dispose();
 		explosionAudio.dispose();
@@ -635,7 +643,7 @@ public class SpaceScreen implements Screen {
 	
 	/*
 	 * endPlanet  = location of end planet. [x, y]
-	 * newPlanets = list of planets.        [x, y, size, filename]
+	 * newPlanets = list of planets.        [x, y, size, resourcetype]
 	 * newClouds  = list of clouds.         [x, y, size]
 	 */
 	private void placePlanets(int[] endPlanet, int[][] newPlanets, int[][] newClouds) {
@@ -645,9 +653,8 @@ public class SpaceScreen implements Screen {
 		
 		for (int i = 0; i < newPlanets.length; i++) {
 			p = Utils.createPlanet(game, world, "planet" + newPlanets[i][3], newPlanets[i][2], new Vector2(newPlanets[i][0], newPlanets[i][1]));
-			int rType = MathUtils.random(1, Constants.NUM_RESOURCES - 1);
-			for(int j = 0; j < 8; j++)
-				p.addOrbitter(Utils.createResource(game, rType));
+			for (int j = 0; j < 8; j++)
+				p.addOrbitter(Utils.createResource(game, newPlanets[i][3]));
 			planets.add(p);
 			entities.addAll(p.getOrbitters());
 		}
