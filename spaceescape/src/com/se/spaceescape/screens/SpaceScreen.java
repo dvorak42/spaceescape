@@ -38,6 +38,8 @@ public class SpaceScreen implements Screen {
 	public float elapsedTime;
 	public int pickedUp;
 	
+	boolean noAttacks = true;
+	
 	public SpaceEscapeGame game;
 	public Color oC = Color.WHITE;
 
@@ -284,8 +286,9 @@ public class SpaceScreen implements Screen {
 
 		
 		timeToAttack -= Gdx.graphics.getDeltaTime();
-		if(Constants.ATTACK_DELAY < 0 && oxygenRemaining < maximumOxygenSteps / 2) {
+		if(Constants.ATTACK_DELAY == -1 && noAttacks && oxygenRemaining < maximumOxygenSteps / 2) {
 			attackPlayer();
+			noAttacks = false;
 		} else if(Constants.ATTACK_DELAY > 0 && timeToAttack < 0) {
 			if(MathUtils.random() < Constants.ATTACK_PROB)
 				attackPlayer();
