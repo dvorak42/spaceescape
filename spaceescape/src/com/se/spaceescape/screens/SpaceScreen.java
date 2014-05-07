@@ -238,59 +238,61 @@ public class SpaceScreen implements Screen {
 		}
 		sr.end();
 		
-		// Grab the two closest planets.
-		float[] closestPlanets  = {99999999f, 99999999f};
-		int[] closestPlanetsIdx = new int[2];
-		float planetDistance;
-		for (int i = 0; i < planets.size; i++) {
-			planetDistance = planets.get(i).body.getWorldCenter().dst2(spaceship.body.getWorldCenter());
-			if (planetDistance < 700000 && planets.get(i).fname != "goldplanet") {
-				if (planetDistance < closestPlanets[0]) {
-					closestPlanets[1] = closestPlanets[0];
-					closestPlanetsIdx[1] = closestPlanetsIdx[0];
-					closestPlanets[0] = planetDistance;
-					closestPlanetsIdx[0] = i;
-				} else if (planetDistance < closestPlanets[1]) {
-					closestPlanets[1] = planetDistance;
-					closestPlanetsIdx[1] = i;
+		if(camera.zoom <= Constants.DEFAULT_ZOOM) {
+			// Grab the two closest planets.
+			float[] closestPlanets  = {99999999f, 99999999f};
+			int[] closestPlanetsIdx = new int[2];
+			float planetDistance;
+			for (int i = 0; i < planets.size; i++) {
+				planetDistance = planets.get(i).body.getWorldCenter().dst2(spaceship.body.getWorldCenter());
+				if (planetDistance < 700000 && planets.get(i).fname != "goldplanet") {
+					if (planetDistance < closestPlanets[0]) {
+						closestPlanets[1] = closestPlanets[0];
+						closestPlanetsIdx[1] = closestPlanetsIdx[0];
+						closestPlanets[0] = planetDistance;
+						closestPlanetsIdx[0] = i;
+					} else if (planetDistance < closestPlanets[1]) {
+						closestPlanets[1] = planetDistance;
+						closestPlanetsIdx[1] = i;
+					}
 				}
 			}
-		}
-		// Draw the triangles
-		
-		sr.begin(ShapeType.Filled);
-		Gdx.gl.glLineWidth(1);
-		sr.setColor(tint(Color.valueOf("FFD700")));
-		int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
-		if (navCount > closestPlanets.length)
-			navCount = closestPlanets.length;
-		for (int i = 0; i < navCount; i++) {
-			if (closestPlanets[i] < 700000) {
-				Vector2 direction = planets.get(closestPlanetsIdx[i])
-						.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
-				Vector2 ang1 = direction.cpy().rotate(10);
-				Vector2 ang2 = direction.cpy().rotate(-10);
-				sr.triangle(midX + 150 * direction.x * scl,  midY + 150 * direction.y * scl,
-						    midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
-						    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
+			// Draw the triangles
+
+			sr.begin(ShapeType.Filled);
+			Gdx.gl.glLineWidth(1);
+			sr.setColor(tint(Color.valueOf("FFD700")));
+			int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
+			if (navCount > closestPlanets.length)
+				navCount = closestPlanets.length;
+			for (int i = 0; i < navCount; i++) {
+				if (closestPlanets[i] < 700000) {
+					Vector2 direction = planets.get(closestPlanetsIdx[i])
+							.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
+					Vector2 ang1 = direction.cpy().rotate(10);
+					Vector2 ang2 = direction.cpy().rotate(-10);
+					sr.triangle(midX + 150 * direction.x * scl,  midY + 150 * direction.y * scl,
+							midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
+							midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
+				}
 			}
+
+			Planet goal = null;
+			for(Planet p : planets)
+				if(p.endPlanet)
+					goal = p;
+
+					sr.setColor(tint(Color.valueOf("a8ff00")));
+					Vector2 direction = goal
+							.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
+					Vector2 ang1 = direction.cpy().rotate(10);
+					Vector2 ang2 = direction.cpy().rotate(-10);			
+					sr.triangle(midX + 170 * direction.x * scl,  midY + 170 * direction.y * scl,
+							midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
+							midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
+					sr.end();
+					Gdx.gl.glDisable(GL20.GL_BLEND);
 		}
-		
-		Planet goal = null;
-		for(Planet p : planets)
-			if(p.endPlanet)
-				goal = p;
-		
-		sr.setColor(tint(Color.valueOf("a8ff00")));
-		Vector2 direction = goal
-				.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
-		Vector2 ang1 = direction.cpy().rotate(10);
-		Vector2 ang2 = direction.cpy().rotate(-10);			
-		sr.triangle(midX + 170 * direction.x * scl,  midY + 170 * direction.y * scl,
-				    midX + 120 * ang1.x * scl,       midY + 120 * ang1.y * scl,
-				    midX + 120 * ang2.x * scl,       midY + 120 * ang2.y * scl);
-		sr.end();
-		Gdx.gl.glDisable(GL20.GL_BLEND);
 
 		
 		timeToAttack -= Gdx.graphics.getDeltaTime();
