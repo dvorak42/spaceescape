@@ -59,6 +59,7 @@ public class SpaceGestureListener implements GestureListener {
 				Vector2 p2 = rg.getPosition().cpy().add(rg.getSize());
 				if(x > p1.x && x < p2.x && y > p1.y && y < p2.y) {
 					rg.tap();
+					screen.itemGetAudio.play(0.2f);
 				}
 			}
 		}

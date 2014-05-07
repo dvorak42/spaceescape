@@ -116,7 +116,7 @@ public class Spaceship extends PhysicalEntity {
 	public void acquire(ResourceItem ri) {
 		if(ri.leaving || screen.toDestroy.contains(ri, true))
 			return;
-		screen.itemGetAudio.play();
+		screen.itemGetAudio.play(0.2f);
 		Utils.addItem(game, ri.type, getPosition());
 		screen.pickedUp++;
 		screen.toDestroy.add(ri);
