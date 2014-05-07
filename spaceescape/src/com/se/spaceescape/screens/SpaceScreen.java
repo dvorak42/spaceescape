@@ -392,7 +392,7 @@ public class SpaceScreen implements Screen {
 		
 		game.hudBatch.setProjectionMatrix(sr.getProjectionMatrix());
 		game.hudBatch.begin();
-		initX = 72;
+		initX = 71;
 		initY = 96;
 		int offset = 0;
 		for(int rType : Constants.RESOURCE_TYPES) {
