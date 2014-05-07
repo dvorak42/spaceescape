@@ -57,10 +57,6 @@ public class Utils {
 
 	public static Planet createPlanet(SpaceEscapeGame game, World world, String fname, int alt, Vector2 pos) {
 		Texture fPlanetTexture = new Texture(Gdx.files.internal("art/" + fname + ".png"));
-		if(fname.equals("planet1"))
-			alt = 250;
-		else
-			alt = 150;
 		Planet p = new Planet(game, new Sprite(fPlanetTexture), alt, fname);
 		p.initBody(world, pos);
 		return p;
