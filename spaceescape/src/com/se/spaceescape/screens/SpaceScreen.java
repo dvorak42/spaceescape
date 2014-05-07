@@ -245,7 +245,7 @@ public class SpaceScreen implements Screen {
 			float planetDistance;
 			for (int i = 0; i < planets.size; i++) {
 				planetDistance = planets.get(i).body.getWorldCenter().dst2(spaceship.body.getWorldCenter());
-				if (planetDistance < 700000 && planets.get(i).fname != "goldplanet") {
+				if (planetDistance < 1000000 && planets.get(i).fname != "goldplanet") {
 					if (planetDistance < closestPlanets[0]) {
 						closestPlanets[1] = closestPlanets[0];
 						closestPlanetsIdx[1] = closestPlanetsIdx[0];
@@ -265,8 +265,8 @@ public class SpaceScreen implements Screen {
 			int navCount = (int) Math.ceil(2 * ((float) resources.get(Constants.RESOURCE_SANITY).size / (float) Constants.TOTAL_RESOURCE[Constants.RESOURCE_SANITY]));
 			if (navCount > closestPlanets.length)
 				navCount = closestPlanets.length;
-			for (int i = 0; i < navCount; i++) {
-				if (closestPlanets[i] < 700000) {
+			for (int i = 0; i < closestPlanets.length; i++) {
+				if (closestPlanets[i] < 1000000) {
 					Vector2 direction = planets.get(closestPlanetsIdx[i])
 							.body.getWorldCenter().sub(spaceship.body.getWorldCenter()).nor();
 					Vector2 ang1 = direction.cpy().rotate(10);
@@ -360,18 +360,6 @@ public class SpaceScreen implements Screen {
 					sr.circle(initX, initY + offset, 110);
 				}
 				sr.setColor(tint(Color.BLACK));
-//				switch(rType) {
-//				case Constants.RESOURCE_FOOD:
-//					sr.setColor(tint(Color.valueOf("7493e9")));
-//					break;
-//				case Constants.RESOURCE_SANITY:
-//					sr.setColor(tint(Color.valueOf("7bcee3")));
-//					break;
-//				case Constants.RESOURCE_WEAPONS:
-//					sr.setColor(tint(Color.valueOf("d5888a")));
-//					break;
-//				}
-//				sr.circle(initX, initY + offset, 60);
 				int total = Math.max(Constants.TOTAL_RESOURCE[rType], resources.get(rType).size);
 				float arclength = 360 / total;
 				for (int i = 0; i < total; i++) {
@@ -447,6 +435,9 @@ public class SpaceScreen implements Screen {
 			}
 			yPos += 160;
 		}
+		yPos += 50;
+		String str = "The Crew";
+		game.bigFont.draw(game.hudBatch, str, (Gdx.graphics.getWidth() - 50) - game.bigFont.getBounds(str).width, yPos);
 		game.hudBatch.end();
 		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -468,7 +459,7 @@ public class SpaceScreen implements Screen {
 			game.hudBatch.begin();
 			game.bigFont.setColor(tint(Color.RED));
 			game.bigFont.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-			String str = "Throw things to defend!";
+			str = "Throw things to defend!";
 			AlienShip closestEnemy = null;
 			Vector2 sp = spaceship.body.getWorldCenter();
 			for(AlienShip e : enemies) {
