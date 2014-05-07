@@ -110,7 +110,7 @@ public class Spaceship extends PhysicalEntity {
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), body.getWorldCenter(), true);
 		screen.entities.add(ri);
 		screen.tossedResources.add(ri);
-		screen.popAudio.play(0.7f);
+		screen.popAudio.play(0.35f);
 	}
 
 	public void acquire(ResourceItem ri) {

@@ -80,6 +80,7 @@ public class SpaceScreen implements Screen {
 	private boolean SEGMENTED_UI = true;
 	private boolean SHADOWED = true;
 	private boolean RANDOM_LEVEL = false;
+	private Vector2 zoomedOutCenter;
 	
 	ShapeRenderer sr;
 	
@@ -188,7 +189,11 @@ public class SpaceScreen implements Screen {
 		totalTime += delta;
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		camera.position.set(spaceship.body.getWorldCenter(), 0);
+		if (camera.zoom > Constants.DEFAULT_ZOOM) {
+			camera.position.set(zoomedOutCenter, 0);
+		} else {
+			camera.position.set(spaceship.body.getWorldCenter(), 0);
+		}
 		camera.update();
 		game.backgroundBatch.setProjectionMatrix(camera.combined);
 		game.hudBatch.begin();
@@ -222,11 +227,14 @@ public class SpaceScreen implements Screen {
 		sr.begin(ShapeType.Line);
 		Gdx.gl.glLineWidth(20 * scl);
 		sr.setColor(tint(Color.valueOf("00853A")));
-		sr.circle(midX, midY, 125 * scl, 100);
 		if(camera.zoom > Constants.DEFAULT_ZOOM) {
+			Vector2 ssmid = spaceship.body.getWorldCenter().sub(zoomedOutCenter).div(camera.zoom);
+			sr.circle(midX+ssmid.x, midY+ssmid.y, 125 * scl, 100);
 			Gdx.gl.glLineWidth(80 * scl);
 			sr.setColor(tint(Color.GREEN));
-			sr.circle(midX,  midY, 200 * scl, 100);
+			sr.circle(midX+ssmid.x, midY+ssmid.y, 200 * scl, 100);
+		} else {
+			sr.circle(midX, midY, 125 * scl, 100);
 		}
 		sr.end();
 		
@@ -374,7 +382,10 @@ public class SpaceScreen implements Screen {
 					sr.setColor(tint(Color.valueOf("AE594E")));
 					break;
 				}
-				sr.circle(initX, initY + offset, 60);
+				sr.setColor(tint(Color.valueOf("00335C")));
+				if (rType == selectedResource)
+					sr.setColor(tint(Color.valueOf("FFDB76")));
+				sr.circle(initX, initY + offset, 65);
 				offset += 225;
 			}
 			sr.setColor(tint(Color.DARK_GRAY));
@@ -524,6 +535,8 @@ public class SpaceScreen implements Screen {
 		hovering = new Array<AlertEntity>();
 		resources = new Array<Array<ResourceItem>>();
 		resources.add(null);
+		zoomedOutCenter = spaceship.body.getWorldCenter().add(new Vector2(-2600,2000)).cpy();
+
 
 		for(int rType : Constants.RESOURCE_TYPES) {
 			resources.add(new Array<ResourceItem>());
@@ -539,24 +552,25 @@ public class SpaceScreen implements Screen {
 			// the distance a player can get from flinging all
 			// 36 items steadily in an attempt to get to the
 			// home planet.
-			int[] endplanet = {-3200, 1700};
-			int[][] newPlanets = { { 400,   2500, 250, 1},
-					               { 1667,  1400, 150, 2},
-					               { -200, -1508, 150, 2},
-					               {-1109,   600, 250, 1},
-					               { 1480,  -237, 250, 1},
-					               { 2480, -1237, 150, 2},
-					               {-1980,  -837, 250, 1},
-					               {-3200,  2000, 150, 2},
-					               { 3200,  3400, 250, 1},
-					               {-3200, -3400, 150, 2},
+			int[] endplanet = {-5800, 3700};
+			int[][] newPlanets = { {-2200,  4500, 250, 1},
+					               { -933,  3400, 150, 2},
+					               {-2800,   492, 150, 2},
+					               {-3709,  2600, 250, 1},
+					               {-1120,  1763, 250, 1},
+					               { -120,   763, 150, 2},
+					               {-4580,  1163, 250, 1},
+					               {-5800,  2800, 150, 2},
+					               {  600,  5400, 250, 1},
+					               {-5800, -1400, 150, 2},
 					               };
-			int[][] newClouds  = { {-1724,   968, 100},
-					               { 1001,   597, 100},
-					               {  200, -3000, 100},
-					               {-1600,  2400, 100},
-					               {-2000, -1500, 100},
+			int[][] newClouds  = { {-4324,  2968, 100},
+					               {-1599,  2597, 100},
+					               {-2400, -1000, 100},
+					               {-4200,  4400, 100},
+					               {-4600,   500, 100},
 			                       };
+
 			placePlanets(endplanet, newPlanets, newClouds);
 		}
 
