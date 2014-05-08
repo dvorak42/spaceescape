@@ -38,7 +38,7 @@ public class Spaceship extends PhysicalEntity {
 
 		FixtureDef fd = new FixtureDef();
 	    fd.density = 0.1f;
-	    fd.friction = 0.2f;
+	    fd.friction = 0.1f;
 	    fd.restitution = 0.3f;
 	    Utils.mainBodies.attachFixture(body, "spaceshuttle", fd, sprite.getWidth());
 	    modelOrigin = Utils.mainBodies.getOrigin("spaceshuttle", sprite.getWidth());
@@ -103,7 +103,7 @@ public class Spaceship extends PhysicalEntity {
 		ri.initBody(world, pos);
 		ri.leaving = true;
 		
-		Vector2 force = offset.cpy().nor().scl(10000000);
+		Vector2 force = offset.cpy().nor().scl(1000000000);
 		//ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		ri.body.applyForce(force, ri.body.getWorldCenter(), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), body.getWorldCenter(), true);

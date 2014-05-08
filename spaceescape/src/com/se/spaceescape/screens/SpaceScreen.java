@@ -93,13 +93,13 @@ public class SpaceScreen implements Screen {
 	public Sprite zoomButton;
 	
 	// Sounds
-	public Sound attackAudio = Gdx.audio.newSound(Gdx.files.internal("music/suction.wav"));
+	public Sound attackAudio = Gdx.audio.newSound(Gdx.files.internal("music/enemyshoot.wav"));
 	public Sound popAudio = Gdx.audio.newSound(Gdx.files.internal("music/pop.mp3"));
 	public Sound itemGetAudio = Gdx.audio.newSound(Gdx.files.internal("music/itemget.wav"));
 	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
 	
 	// Music
-	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic2.mp3"));
+	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
 	public Music attackmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/battlemusic2.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
@@ -578,7 +578,7 @@ public class SpaceScreen implements Screen {
 			placePlanets(endplanet, newPlanets, newClouds);
 		}
 
-		zoomButton = new Sprite(new Texture(Gdx.files.internal("art/button.png")));
+		zoomButton = new Sprite(new Texture(Gdx.files.internal("art/radar.png")));
 		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
 		
 		enemies = new Array<AlienShip>();

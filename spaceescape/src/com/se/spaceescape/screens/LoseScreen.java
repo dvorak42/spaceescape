@@ -3,6 +3,7 @@ package com.se.spaceescape.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,6 +17,7 @@ public class LoseScreen implements Screen {
 	float fadeDelay;
 	OrthographicCamera camera;
 	Texture background;
+	public Sound loseGameAudio = Gdx.audio.newSound(Gdx.files.internal("music/gameover.wav"));
 	
 	public LoseScreen(SpaceEscapeGame g, SpaceScreen parent) {
 		game = g;
@@ -29,7 +31,7 @@ public class LoseScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		fadeDelay -= delta;
 		if(fadeDelay < 0)
-			fadeDelay = 2.0f;
+			fadeDelay = 0.0f;
 
 		float d = fadeDelay / Constants.FADE_DELAY;
 		game.gameScreen.oC = new Color(d, d, d, 1);
@@ -61,6 +63,7 @@ public class LoseScreen implements Screen {
 	public void show() {
 		background = new Texture(Gdx.files.internal("art/gameover.png"));
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		loseGameAudio.play();
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class LoseScreen implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
+		loseGameAudio.dispose();
 	}
 
 }
