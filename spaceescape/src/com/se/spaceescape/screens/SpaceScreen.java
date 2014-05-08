@@ -99,7 +99,7 @@ public class SpaceScreen implements Screen {
 	public Sound explosionAudio = Gdx.audio.newSound(Gdx.files.internal("music/explosion.mp3"));
 	
 	// Music
-	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic.mp3"));
+	public Music bgmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/bgmusic2.mp3"));
 	public Music attackmusicAudio = Gdx.audio.newMusic(Gdx.files.internal("music/battlemusic2.mp3"));
 	
 	public SpaceScreen(SpaceEscapeGame g) {
@@ -143,7 +143,7 @@ public class SpaceScreen implements Screen {
 			}
 		
 			Vector2 v = spaceship.body.getLinearVelocity().cpy();
-			spaceship.body.applyForce(v.scl(-0.05f * v.len2()), spaceship.body.getWorldCenter(), true);
+			spaceship.body.applyForce(v.scl(-0.02f * v.len2()), spaceship.body.getWorldCenter(), true);
 
 			float a1 = (MathUtils.radDeg * spaceship.getRotation() + 360) % 360;
 			float a2 = (spaceship.targetAngle + 360) % 360;
@@ -436,7 +436,7 @@ public class SpaceScreen implements Screen {
 			yPos += 160;
 		}
 		yPos += 50;
-		String str = "The Crew";
+		String str = "The Crewzz";
 		game.bigFont.draw(game.hudBatch, str, (Gdx.graphics.getWidth() - 50) - game.bigFont.getBounds(str).width, yPos);
 		game.hudBatch.end();
 		
