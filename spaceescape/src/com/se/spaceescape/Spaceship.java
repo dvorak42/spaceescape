@@ -103,7 +103,7 @@ public class Spaceship extends PhysicalEntity {
 		ri.initBody(world, pos);
 		ri.leaving = true;
 		
-		Vector2 force = offset.cpy().nor().scl(10000000);
+		Vector2 force = offset.cpy().nor().scl(100000000);
 		//ri.body.applyForce(force, pos.cpy().sub(offset.cpy().scl(3f)), true);
 		ri.body.applyForce(force, ri.body.getWorldCenter(), true);
 		body.applyForce(Vector2.Zero.cpy().sub(force.cpy()), body.getWorldCenter(), true);

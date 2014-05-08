@@ -436,7 +436,7 @@ public class SpaceScreen implements Screen {
 			yPos += 160;
 		}
 		yPos += 50;
-		String str = "The Crewzz";
+		String str = "The Crew";
 		game.bigFont.draw(game.hudBatch, str, (Gdx.graphics.getWidth() - 50) - game.bigFont.getBounds(str).width, yPos);
 		game.hudBatch.end();
 		

@@ -32,7 +32,7 @@ public class AlienShip extends PhysicalEntity {
 	@Override
 	public void initBody(World w, Vector2 pos) {
 		super.initBody(w, pos);
-
+		
 		BodyDef bd = new BodyDef();
 		bd.position.set(pos);
 		bd.type = BodyType.DynamicBody;
@@ -40,6 +40,7 @@ public class AlienShip extends PhysicalEntity {
 		body = w.createBody(bd);
 
 		FixtureDef fd = new FixtureDef();
+		fd.isSensor = true; 
 	    fd.density = 0.1f;
 	    fd.friction = 0.5f;
 	    fd.restitution = 0.3f;
