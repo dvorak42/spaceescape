@@ -337,7 +337,7 @@ public class SpaceScreen implements Screen {
 
 		game.hudBatch.begin();
 		zoomButton.setColor(oC);
-		zoomButton.setPosition(Gdx.graphics.getWidth() - 150, 50);
+		zoomButton.setPosition(Gdx.graphics.getWidth() - 200, 40);
 		zoomButton.draw(game.hudBatch);
 		game.hudBatch.end();
 		
@@ -563,7 +563,7 @@ public class SpaceScreen implements Screen {
 					               {-3709,  2600, 150, Constants.RESOURCE_SANITY},
 					               {-1120,  1763, 150, Constants.RESOURCE_SANITY},
 					               { -120,   763, 250, Constants.RESOURCE_WEAPONS},
-					               {-4580,  1163, 150, Constants.RESOURCE_SANITY},
+					               {-4580,  1163, 150, Constants.RESOURCE_FOOD},
 					               {-5800,  2800, 250, Constants.RESOURCE_WEAPONS},
 					               {  600,  5400, 150, Constants.RESOURCE_SANITY},
 					               {-5800, -1400, 250, Constants.RESOURCE_WEAPONS},
